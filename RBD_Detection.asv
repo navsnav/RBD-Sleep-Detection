@@ -170,11 +170,11 @@ for out=1:folds
     
     %Predict using all emg features for annotated Sleep Staging
 %     [EMG_Yhat EMG_votes EMG_predict_val] = classRF_predict(EMG_Xtst,emg_rf,extra_options);
-    [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst);    
-    
+    [EMG_Yhat,EMG_votes]  = predict(emg_rf,EMG_Xtst);     
+    [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst)    
     %Predict using all established emg features for annotated Sleep Staging
 %     [EMG_est_Yhat EMG_est_votes EMG_est_predict_val] = classRF_predict(EMG_est_Xtst,emg_est_rf,extra_options);    
-    [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_est_Xtst);    
+    [EMG_est_Yhat, EMG_est_votes] = predict(emg_est_rf,EMG_est_Xtst);     
 
  %% Test RBD Detection using Automatic Sleep Staging
     
@@ -191,11 +191,10 @@ for out=1:folds
     % Train RF for RBD Detection using Automatic Sleep Staging
     %Predict using all emg featres for automatically annoated Sleep Staging
 %     [EMG_Auto_Yhat EMG_Auto_votes EMG_Auto_predict_val] = classRF_predict(EMG_Auto_Xtst,emg_rf,extra_options);
-    [EMG_Auto_Yhat,EMG_Auto_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Auto_Xtst);    
-    
+    [EMG_Auto_Yhat,EMG_Auto_votes] = predict(emg_rf,EMG_Auto_Xtst);     
     %Predict using all established emg featres for automatically annoated Sleep Staging
 %     [EMG_Auto_est_Yhat EMG_Auto_est_votes EMG_Auto_est_predict_val] = classRF_predict(EMG_Auto_est_Xtst,emg_est_rf,extra_options);   
-    [EMG_Auto_est_Yhat,EMG_Auto_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_Auto_est_Xtst);    
+    [EMG_Auto_est_Yhat,EMG_Auto_est_votes] = predict(emg_est_rf,EMG_Auto_est_Xtst);     
 
     %% Store Results  
     % Automated Sleep Staging
