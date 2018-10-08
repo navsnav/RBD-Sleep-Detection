@@ -1,4 +1,4 @@
-function compare_rbd_detection_results(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder)
+function compare_rbd_detection_results(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag)
 %New Features
 [accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results2(EMG_Yhat_Results==1, rbd_group==1);
 ConfMat_RBD_Class_Summary = confusionmat(EMG_Yhat_Results==1, rbd_group==1, 'order', [0 1]);
@@ -34,11 +34,19 @@ rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappa
 rbd_d_anno_tab = cell2table(rbd_d_anno_data,'VariableNames',{'Accuracy','Sensitivity','Specificity','Precision','Recall','F1','Kappa'},...
     'RowNames',{['MAD (',label_name,')'],['Stream (',label_name,')'],['Atonia Index (',label_name,')'],['Established Metrics (',label_name,')'],['New Features (',label_name,')']});
 
-fig_rbd_d_annotated = figure('units','normalized','outerposition',[0 0 1 1]);
+          
+if (print_figures)
+    fig_rbd_d_annotated = figure('units','normalized','outerposition',[0 0 1 1]);
 
-uitable(fig_rbd_d_annotated,'Data', rbd_d_anno_data,'ColumnName',rbd_d_anno_tab.Properties.VariableNames,...
-'RowName',rbd_d_anno_tab.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);                
-                
-if (print_figures), saveas(fig_rbd_d_annotated,strcat(pwd,print_folder,['Summary_RBD_Detection_,',label_name,'_Table_All']),'png'), end
+    uitable(fig_rbd_d_annotated,'Data', rbd_d_anno_data,'ColumnName',rbd_d_anno_tab.Properties.VariableNames,...
+    'RowName',rbd_d_anno_tab.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);                
+
+    saveas(fig_rbd_d_annotated,strcat(pwd,print_folder,['Summary_RBD_Detection_,',label_name,'_Table_All']),'png');
+end
+
+if display_flag
+   disp(['RBD Detection Summary (',label_name,'):']);
+   disp(rbd_d_anno_tab); 
+end
 
 end

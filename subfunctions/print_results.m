@@ -1,4 +1,4 @@
-function print_sleep_results(Sleep,Yhat_Results,states,print_figures,print_folder)
+function print_results(Sleep,Yhat_Results,states,print_figures,print_folder,display_flag)
 
 num_subjects = unique(Sleep(:,1));
 
@@ -28,14 +28,18 @@ end
 
 %% Generate Performance Table for all subjects
 table_name='Summary_SS_Detection_Performance_Table';
-print_performance_table(table_name,Accuracy,Sensitivity,Specificity,Precision,Recall,F1,CohenKappa,states,print_figures,print_folder);
+[T1 T2]= print_performance_table(table_name,Accuracy,Sensitivity,Specificity,Precision,Recall,F1,CohenKappa,states,print_figures,print_folder);
 %% Generate Performance Table for all RBD Participants
 table_name='Summary_SS_Detection_Performance_Table_RBD';
-print_performance_table(table_name,Accuracy(:,rbd),Sensitivity(:,rbd),Specificity(:,rbd),Precision(:,rbd),Recall(:,rbd),F1(:,rbd),CohenKappa(:,rbd),states,print_figures,print_folder);
+[T3 T4] = print_performance_table(table_name,Accuracy(:,rbd),Sensitivity(:,rbd),Specificity(:,rbd),Precision(:,rbd),Recall(:,rbd),F1(:,rbd),CohenKappa(:,rbd),states,print_figures,print_folder);
 %% Generate Performance Table for all HC Participants
 table_name='Summary_SS_Detection_Performance_Table_HC';
-print_performance_table(table_name,Accuracy(:,~rbd),Sensitivity(:,~rbd),Specificity(:,~rbd),Precision(:,~rbd),Recall(:,~rbd),F1(:,~rbd),CohenKappa(:,~rbd),states,print_figures,print_folder);
+[T5 T6] = print_performance_table(table_name,Accuracy(:,~rbd),Sensitivity(:,~rbd),Specificity(:,~rbd),Precision(:,~rbd),Recall(:,~rbd),F1(:,~rbd),CohenKappa(:,~rbd),states,print_figures,print_folder);
 
+if display_flag
+    display('Automatic Sleep Stage Summary:');
+    disp(T1);
+end
 
 
 end

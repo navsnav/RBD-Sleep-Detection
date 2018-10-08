@@ -70,6 +70,7 @@ disp('Feature Extraction Complete and Saved');
 %% Parameters for generating results
 view_results = 1; %Produce Graphs/figures
 print_figures= 1; %Save Graphs/figures
+display_flag = 1; %Diplay results on command window
 save_data = 1; %Save Data
 outfilename = 'RBD_Detection_Results'; %Filename/Folder to be created
 
@@ -115,7 +116,7 @@ save('RBD_Detection_RF.mat','rbd_est_rf','rbd_new_rf');
 % Apply cross fold validation for automated sleep staging followed by RBD
 % detection using established metrics and new metrics
 
-[Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,save_data,outfilename);
+[Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,save_data,outfilename,display_flag);
 
 
 

@@ -1,4 +1,4 @@
-function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Auto_est_Yhat_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,save_data,outfilename)
+function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Auto_est_Yhat_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,save_data,outfilename,display_flag)
   % Copyright (c) 2018, Navin Cooray (University of Oxford)
   % All rights reserved.
   %
@@ -243,8 +243,7 @@ EMG_Table_Names = EMG_Table.Properties.VariableNames;
 states = [0,1,2,3,5];
 if (view_results)
    %Print Sleep Staging Results 
-   print_sleep_results(Sleep,Yhat_Results,rbd_group,states,print_figures,print_folder); 
-
+    print_results(Sleep,Yhat_Results,states,print_figures,print_folder,display_flag);
 end
 
 %% Print RBD Detection Results
@@ -261,9 +260,9 @@ if (view_results)
    print_rbd_detection_results(results_f_est_auto,results_f_new_auto,rbd_detect_name1,rbd_detect_name2,tablename,print_figures,print_folder); 
    %Compare RBD Detection (annotated)
    label_name = 'Annotated';
-   compare_rbd_detection_results(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder);
+   compare_rbd_detection_results(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
    label_name = 'Automated';
-   compare_rbd_detection_results(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder);
+   compare_rbd_detection_results(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
 end
 
 
