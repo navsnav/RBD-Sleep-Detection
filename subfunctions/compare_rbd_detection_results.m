@@ -41,7 +41,7 @@ if (print_figures)
     uitable(fig_rbd_d_annotated,'Data', rbd_d_anno_data,'ColumnName',rbd_d_anno_tab.Properties.VariableNames,...
     'RowName',rbd_d_anno_tab.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);                
 
-    saveas(fig_rbd_d_annotated,strcat(pwd,print_folder,['Summary_RBD_Detection_,',label_name,'_Table_All']),'png');
+    saveas(fig_rbd_d_annotated,strcat(print_folder,'\',['Summary_RBD_Detection_,',label_name,'_Table_All']),'png');
 end
 
 if display_flag

@@ -27,6 +27,6 @@ fig_rbd_det = figure('units','normalized','outerposition',[0 0 1 1]);
 
 uitable(fig_rbd_det,'Data', [op_t_rbd__est_cell;op_t_rbd_new_cell],'ColumnName',op_t_rbd_det.Properties.VariableNames,...
 'RowName',op_t_rbd_det.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);
-if (print_figures), saveas(fig_rbd_det,strcat(pwd,print_folder,tablename),'png'), end
+if (print_figures), saveas(fig_rbd_det,strcat(print_folder,'\',tablename),'png'), end
 
 end

@@ -1,4 +1,4 @@
-function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Auto_est_Yhat_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,save_data,outfilename,display_flag)
+function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Auto_est_Yhat_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag)
   % Copyright (c) 2018, Navin Cooray (University of Oxford)
   % All rights reserved.
   %
@@ -63,8 +63,7 @@ function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Resul
 Sleep_table = Sleep_table_Pre;
 Save_Data_Name = outfilename;
 
-print_folder = strcat('\Graphs_',outfilename,'\');
-if print_figures, mkdir(strcat(pwd,print_folder)), end
+if print_figures, mkdir(print_folder), end
 
 
 Sleep = table2array(Sleep_table);
@@ -102,7 +101,7 @@ results_f_est_auto = zeros(folds,6);
 results_f_new_auto= zeros(folds,6);
 
 for out=1:folds
-    out
+    disp(['Fold: ',num2str(out)]);
     PatientTest = (indices==out); %patient id for testing
     PatientTrain = (indices~=out);%patient id for training
     
@@ -179,7 +178,7 @@ for out=1:folds
  %% Test RBD Detection using Automatic Sleep Staging
     
     Sleep_table_automatic = Sleep_table_Pre(PatientTest_idx,:);
-    Sleep_table_automatic.AnnotatedSleepStage = str2num(cell2mat(Yhat)); %Automatic sleep staging
+    Sleep_table_automatic.AnnotatedSleepStage = Yhat; %Automatic sleep staging
     
     % Generate Test values based on automatic classified Sleep Staging
     EMG_Auto_Test_Table = Calculate_EMG_Values_table(Sleep_table_automatic);
@@ -199,36 +198,36 @@ for out=1:folds
 
     %% Store Results  
     % Automated Sleep Staging
-    Yhat_Results(PatientTest_idx) =  str2num(cell2mat(Yhat));
+    Yhat_Results(PatientTest_idx) =  Yhat;
     votes_Results(PatientTest_idx,:) = votes;
     importance_Results(:,:,out) = [rf_importance];            
     % RBD Detection using Annoated Sleep Staging
-    EMG_Yhat_Results(PatientTest) = str2num(cell2mat(EMG_Yhat));    
+    EMG_Yhat_Results(PatientTest) = EMG_Yhat;    
     EMG_votes_Results(PatientTest,:) = EMG_votes;    
-    EMG_est_Yhat_Results(PatientTest) = str2num(cell2mat(EMG_est_Yhat));    
+    EMG_est_Yhat_Results(PatientTest) = EMG_est_Yhat;    
     EMG_est_votes_Results(PatientTest,:) = EMG_est_votes;     
     EMG_Metric(PatientTest,:) = EMG_Xtst;        
     EMG_importance_Results(:,:,out) = [emg_rf_importance];        
     EMG_est_importance_Results(:,:,out) = [emg_est_rf_importance];     
     % RBD Detection using Automatic Sleep Staging
-    EMG_Auto_Yhat_Results(PatientTest) = str2num(cell2mat(EMG_Auto_Yhat));    
+    EMG_Auto_Yhat_Results(PatientTest) = EMG_Auto_Yhat;    
     EMG_Auto_votes_Results(PatientTest,:) = EMG_Auto_votes;    
-    EMG_Auto_est_Yhat_Results(PatientTest) = str2num(cell2mat(EMG_Auto_est_Yhat));    
+    EMG_Auto_est_Yhat_Results(PatientTest) = EMG_Auto_est_Yhat;    
     EMG_Auto_est_votes_Results(PatientTest,:) = EMG_Auto_est_votes;               
     EMG_Auto_Metric(PatientTest,:) = EMG_Auto_Xtst;
     
 %% RBD Detection Results
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(str2num(cell2mat(EMG_est_Yhat))==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_est_Yhat==1, rbd_group(PatientTest)==1);
     results_f_est(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(str2num(cell2mat(EMG_Yhat))==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Yhat==1, rbd_group(PatientTest)==1);
     results_f_new(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(str2num(cell2mat(EMG_Auto_est_Yhat))==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_est_Yhat==1, rbd_group(PatientTest)==1);
     results_f_est_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];    
  
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(str2num(cell2mat(EMG_Auto_Yhat))==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_Yhat==1, rbd_group(PatientTest)==1);
     results_f_new_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];   
     
 end
@@ -286,7 +285,7 @@ if (view_results)
 end
 
 %%
-if (save_data),save(strcat(Save_Data_Name,'.mat'),'Sleep','Sleep_table','Sleep_Struct',...
+if (save_data),save(strcat(print_folder,'\',Save_Data_Name,'.mat'),'Sleep','Sleep_table','Sleep_Struct',...
         'Sleep_names','Yhat_Results',...
         'votes_Results',...
         'importance_Results','SS_Features',...

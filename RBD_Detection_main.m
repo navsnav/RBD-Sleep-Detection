@@ -77,11 +77,12 @@ cd(current_dir);
 % Sleep_table(remove_idx,:) = [];
 
 %% Parameters for generating results
+outfilename = 'RBD_Detection_Results'; %Filename/Folder to be created
 view_results = 1; %Produce Graphs/figures
 print_figures= 1; %Save Graphs/figures
+print_folder = strcat(data_folder,'\Graphs_',outfilename);
 display_flag = 1; %Diplay results on command window
 save_data = 1; %Save Data
-outfilename = 'RBD_Detection_Results'; %Filename/Folder to be created
 
 %% Preprocess Data 
 SS_Features =[11:144]; % Features used for sleep staging
@@ -94,7 +95,7 @@ disp('Precprocessing Features...');
 disp('Precprocessing Complete.');
 
 % Random Forest paramters
-n_trees = 500;    
+n_trees = 50;    
 
 %% Cross Fold Indexing
 Sleep = table2array(Sleep_table_Pre);
@@ -104,28 +105,11 @@ rbd_group = Sleep(ia,6)==5;
 folds = ceil(log2(length(rbd_group))/5)*5; %find appropriate number of folds
 indices = crossvalind('Kfold',rbd_group, folds);
 
-%% Train Sleep Staging
-%Matlab Trees
-ss_rf               = TreeBagger(n_trees,Sleep(:,SS_Features),Sleep(:,7),'OOBPredictorImportance','on'); 
-ss_rf_importance    =  ss_rf.OOBPermutedPredictorDeltaError';
-save('Sleep_Staging_RF.mat','ss_rf');
-
-%% Train RBD Detection
-
-EMG_Table = Calculate_EMG_Values_table(Sleep_table_Pre);
-% Preprocess Data
-[EMG_Table_Pre] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
-%Matlab Trees
-rbd_new_rf_ss = TreeBagger(n_trees,EMG_Table_Pre(:,EMG_feats),EMG_Table_Pre(:,2),'OOBPredictorImportance','on'); 
-rbd_est_rf_ss = TreeBagger(n_trees,EMG_Table_Pre(:,EMG_est_feats),EMG_Table_Pre(:,2),'OOBPredictorImportance','on'); 
-save('RBD_Detection_RF.mat','rbd_est_rf','rbd_new_rf');
-
-
 %% RBD Detection
 % Apply cross fold validation for automated sleep staging followed by RBD
 % detection using established metrics and new metrics
 
-[Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,save_data,outfilename,display_flag);
+[Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag);
 
 
 

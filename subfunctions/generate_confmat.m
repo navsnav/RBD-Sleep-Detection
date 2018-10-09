@@ -30,6 +30,6 @@ function generate_confmat(ConfMat1,Subject,print_figures,print_folder)
     yl = get(gca,'ylim');
     line(repmat(yl(:),1,length(yt)-2),repmat(yt(2:end-1),2,1),'color','black')
         
-    if (print_figures),saveas(fig_num,strcat(pwd,print_folder,'RF_NormConfusionMat_',Subject),'epsc'),end  
+    if (print_figures),saveas(fig_num,strcat(print_folder,'\','RF_NormConfusionMat_',Subject),'epsc'),end  
   
 end

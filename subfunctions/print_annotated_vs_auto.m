@@ -20,8 +20,8 @@ for q=1:length(EMG_feats)
     ylim([0 max_val]);
     legend({'HC','RBD'},'Location','northwest');
 
-    if (print_figures), saveas(fig_num(q),strcat(pwd,print_folder,['Summary_All_',feat_name,'_Actual_Vs_Manual']),'epsc'), end  
-    if (print_figures), saveas(fig_num(q),strcat(pwd,print_folder,['Summary_All_',feat_name,'_Actual_Vs_Manual']),'fig'), end  
+    if (print_figures), saveas(fig_num(q),strcat(print_folder,'\',['Summary_All_',feat_name,'_Actual_Vs_Manual']),'epsc'), end  
+    if (print_figures), saveas(fig_num(q),strcat(print_folder,'\',['Summary_All_',feat_name,'_Actual_Vs_Manual']),'fig'), end  
     
     
 end
@@ -48,8 +48,8 @@ end
     ylim([0 max_val]);
     legend({'HC','RBD'},'Location','northwest');
 
-    if (print_figures), saveas(fig_num(q+1),strcat(pwd,print_folder,['Summary_All_',feat_name,'Max_Actual_Vs_Manual']),'epsc'), end  
-    if (print_figures), saveas(fig_num(q+1),strcat(pwd,print_folder,['Summary_All_',feat_name,'Max_Actual_Vs_Manual']),'fig'), end  
+    if (print_figures), saveas(fig_num(q+1),strcat(print_folder,'\',['Summary_All_',feat_name,'Max_Actual_Vs_Manual']),'epsc'), end  
+    if (print_figures), saveas(fig_num(q+1),strcat(print_folder,'\',['Summary_All_',feat_name,'Max_Actual_Vs_Manual']),'fig'), end  
     
 
 

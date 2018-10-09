@@ -13,6 +13,6 @@ yticks(x);
 yticklabels(EMG_Table_Names(EMG_feats(I)));
 title(titlename);
 xlabel(xname);
-if (print_figures), saveas(fignum,strcat(pwd,print_folder,titlename),'png'), end
+if (print_figures), saveas(fignum,strcat(print_folder,'\',titlename),'png'), end
 
 end

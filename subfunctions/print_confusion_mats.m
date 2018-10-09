@@ -45,7 +45,7 @@ for i=1:length(num_subjects)
     set(gca,'YTick',[0 1 2 3 5 6])
     set(gca,'YTickLabel',{'W','N1','N2','N3','R','M'})
     linkaxes(a,'x');
-    if (print_figures), saveas(fig_1,strcat(pwd,print_folder,'RF_Hyp_Comparison_',Subject{i}),'epsc'), end
+    if (print_figures), saveas(fig_1,strcat(print_folder,'\','RF_Hyp_Comparison_',Subject{i}),'epsc'), end
 
     fig_1b = figure;
     h1a = plot(Sleep(sub_idx,7),'DisplayName','Hypnogram','LineWidth',2);
@@ -57,7 +57,7 @@ for i=1:length(num_subjects)
     set(gca,'YTickLabel',{'W','N1','N2','N3','R','M'})   
     hold on;
     h2a = plot(Yhat(sub_idx),'r','DisplayName','RF Result','LineWidth',1);
-    if (print_figures), saveas(fig_1b,strcat(pwd,print_folder,'RF_Hyp_AlignComp_',Subject{i}),'epsc'), end
+    if (print_figures), saveas(fig_1b,strcat(print_folder,'\','RF_Hyp_AlignComp_',Subject{i}),'epsc'), end
 %%
     T_results = process_classification_results_table(Yhat(sub_idx),Sleep(sub_idx,7));
 
@@ -65,7 +65,7 @@ for i=1:length(num_subjects)
     uitable('Data',T_results{:,:},'ColumnName',T_results.Properties.VariableNames,...
     'RowName',T_results.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);
 
-    if (print_figures), saveas(fig_t,strcat(pwd,print_folder,'All_Sleep_Stage_Performance_Table_',Subject{i}),'png'), end
+    if (print_figures), saveas(fig_t,strcat(print_folder,'\','All_Sleep_Stage_Performance_Table_',Subject{i}),'png'), end
 
 
 end

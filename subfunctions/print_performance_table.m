@@ -38,8 +38,9 @@ if (print_figures)
 fig_sleep_staging_all = figure;
 All_T = uitable(fig_sleep_staging_all,'Data', Data_op_t,'ColumnName',op_t.Properties.VariableNames,...
 'RowName',op_t.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);
-saveas(fig_sleep_staging_all,strcat(pwd,print_folder,table_name),'png');
+saveas(fig_sleep_staging_all,strcat(print_folder,'\',table_name),'png');
 end
+All_T = op_t;
 
 Row_Names = {'Accuracy','Sensitivity','Specificity','Precision','Recall','F1','Kappa'};
 T2 = table(overall_performance(:,1),overall_performance(:,2),'RowNames',Row_Names,'VariableNames',{'Mean','Std'});                
@@ -48,7 +49,7 @@ if (print_figures)
 fig_perf_all = figure;
 uitable('Data',T2{:,:},'ColumnName',T2.Properties.VariableNames,...
 'RowName',T2.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);
-saveas(fig_perf_all,strcat(pwd,print_folder,['REM_',table_name]),'png');
+saveas(fig_perf_all,strcat(print_folder,'\',['REM_',table_name]),'png');
 end
 
 REM_T = T2;
