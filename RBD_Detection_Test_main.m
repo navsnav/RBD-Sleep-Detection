@@ -1,6 +1,7 @@
 % Code to test new data on previously trained models for sleep staging and RBD detection 
 
 %% Add paths
+current_dir = pwd;
 addpath(strcat(pwd,'\libs\'));
 addpath(strcat(pwd,'\subfunctions\'));
 addpath(strcat(pwd,'\dataprep\'));
@@ -9,56 +10,64 @@ addpath(strcat(pwd,'\dataprep\'));
 % There are several options to get PSG signals
 % (A) A folder containing all edf files and annotations
 % (B) Download files eg using CAP sleep database
-% (C) A folder containing all mat files of all PSG signals
-% (D) Load Features matrix
+% (C) A folder containing all 'prepared' mat files of all PSG signals 
+% (D) Load Features matrix saved from ExtractFeatures
 
 %% (A) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
-% current_dir = pwd;
-% data_folder = 'I:\Data\CAP Sleep Database';
+% data_folder = 'I:\Data\CAP Sleep Database'; %Choose file location
 % outputfolder = [current_dir,'\data'];
 % prepare_capslpdb(data_folder,outputfolder);
 
 %% (B) Download PSG Signals  - Use this section to download example edf files and annotations as a test
-% current_dir = pwd;
-% cd('../');
-% outputfolder = [pwd,'\data'];
-% cd(current_dir);
-% % The following data will be downloaded from the CAPS database from
-% % physionet
-% list_of_files = {
-%     'n1';
-%     'n2';
-%     'n3';
-%     'n10';
-%     'n5'
-%     'rbd1';
-%     'rbd2';
-%     'rbd3';
-%     'rbd4';
-%     'rbd5'};
-% 
-% download_CAP_EDF_Annotations(outputfolder,list_of_files);
-% data_folder = outputfolder;
-% 
-% prepare_capslpdb(data_folder,outputfolder);
+cd('../');
+outputfolder = [pwd,'\data'];
+cd(current_dir);
+% The following data will be downloaded from the CAPS database from
+% physionet
+list_of_files = {
+    'n1';
+    'n2';
+    'n3';
+    'n10';
+    'n5'
+    'rbd1';
+    'rbd2';
+    'rbd3';
+    'rbd4';
+    'rbd5'};
+
+download_CAP_EDF_Annotations(outputfolder,list_of_files);
+%Prepare mat files with PSG signals and annotations
+prepare_capslpdb(outputfolder,outputfolder);
 
 %% (C) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
-% signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
-% disp(['Extracting Features:',signals_for_processing]);
-% % Generate Features
-% [Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
-% cd(data_folder);
-% save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
-% cd(current_dir);
-% disp('Feature Extraction Complete and Saved');
-
-%% (D) 
-current_dir = pwd;
-data_folder = 'C:\Users\scro2778\Documents\GitHub\data';
-cd(data_folder);
-filename = 'Features.mat';
-load(filename);
+cd('../');
+data_folder = [pwd,'\data'];
 cd(current_dir);
+signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
+disp(['Extracting Features:',signals_for_processing]);
+% Generate Features
+[Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
+
+cd('../');
+output_folder = [pwd,'\data\features'];
+% Create a destination directory if it doesn't exist
+if exist(output_folder, 'dir') ~= 7
+    fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
+    mkdir(output_folder);
+end
+cd(output_folder);
+save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
+disp('Feature Extraction Complete and Saved');
+cd(current_dir);
+
+%% (D) Load Features matrix saved from ExtractFeatures
+% current_dir = pwd;
+% data_folder = 'C:\Users\scro2778\Documents\GitHub\data\features';
+% cd(data_folder);
+% filename = 'Features.mat';
+% load(filename);
+% cd(current_dir);
 
 %% Load Trained Sleep Staging
 % File location of trained RF
@@ -91,12 +100,13 @@ Sleep_tst = Sleep_table_Pre(:,SS_Features);
 rbd_group = Sleep(ia,6)==5;
 
 %% Test Automated Sleep Staging
-
+disp('Testing Autoamted Sleep Staging...');
 [Yhat,votes] = Predict_SleepStaging_RF(ss_rf,Sleep_tst);
+disp('Sleep Staging Complete.');
 
 %% Show Results - Sleep Staging - working
-
-print_results(Sleep,a,[0,1,2,3,5],0,pwd,1);
+states = [0,1,2,3,5];
+print_results(Sleep,Yhat,states,print_figures,print_folder,display_flag);
 
 %% Test RBD Detection - Using Manually Annotated Sleep Staging
 

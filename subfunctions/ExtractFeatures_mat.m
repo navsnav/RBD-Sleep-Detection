@@ -78,6 +78,7 @@ fls = arrayfun(@(x) x.name,fls,'UniformOutput',false);
 for f=1:length(fls)
     % Loading recording
     load([dbpath fls{f}]);
+    disp(['Extracting Features From: ',fls{f}]);
 %%
 
     hyp_cap = labels;

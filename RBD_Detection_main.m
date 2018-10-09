@@ -1,34 +1,26 @@
 % Main code to run algorithms to perform feature extraction ->
-% train/test/evaluation automated sleep staging while also assessing RBD
+% train/test cross-fold evaluation for automated sleep staging while also assessing RBD
 % Detection
 
 %% Add paths
+current_dir = pwd;
 addpath(strcat(pwd,'\libs\'));
 addpath(strcat(pwd,'\subfunctions\'));
 addpath(strcat(pwd,'\dataprep\'));
 
 %% Attain PSG Signals
 % There are several options to get PSG signals
-% (A) A folder containing all mat files of all PSG signals
-% (B) A folder containing all edf files and annotations
-% (C) Download files eg using CAP sleep database
+% (A) A folder containing all edf files and annotations
+% (B) Download files eg using CAP sleep database
+% (C) A folder containing all 'prepared' mat files of all PSG signals 
+% (D) Load Features matrix saved from ExtractFeatures
 
-%% (A) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
-% current_dir = pwd;
-% data_folder = 'I:\Data\Combined_MASS_JR_CAP_HR';
-% signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
-% [Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing)
-% cd(current_dir);
-% save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
-
-%% (B) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
-% current_dir = pwd;
-% data_folder = 'I:\Data\CAP Sleep Database';
+%% (A) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
+% data_folder = 'I:\Data\CAP Sleep Database'; %Choose file location
 % outputfolder = [current_dir,'\data'];
 % prepare_capslpdb(data_folder,outputfolder);
 
-%% (C) Download PSG Signals  - Use this section to download example edf files and annotations as a test
-current_dir = pwd;
+%% (B) Download PSG Signals  - Use this section to download example edf files and annotations as a test
 cd('../');
 outputfolder = [pwd,'\data'];
 cd(current_dir);
@@ -47,20 +39,37 @@ list_of_files = {
     'rbd5'};
 
 download_CAP_EDF_Annotations(outputfolder,list_of_files);
-data_folder = outputfolder;
+%Prepare mat files with PSG signals and annotations
+prepare_capslpdb(outputfolder,outputfolder);
 
-prepare_capslpdb(data_folder,outputfolder);
-
-
-%% Generate Features
+%% (C) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
+cd('../');
+data_folder = [pwd,'\data'];
+cd(current_dir);
 signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
 disp(['Extracting Features:',signals_for_processing]);
+% Generate Features
 [Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
-cd(data_folder);
-save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
-cd(current_dir);
-disp('Feature Extraction Complete and Saved');
 
+cd('../');
+output_folder = [pwd,'\data\features'];
+% Create a destination directory if it doesn't exist
+if exist(output_folder, 'dir') ~= 7
+    fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
+    mkdir(output_folder);
+end
+cd(output_folder);
+save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
+disp('Feature Extraction Complete and Saved');
+cd(current_dir);
+
+%% (D) Load Features matrix saved from ExtractFeatures
+% current_dir = pwd;
+% data_folder = 'C:\Users\scro2778\Documents\GitHub\data\features';
+% cd(data_folder);
+% filename = 'Features.mat';
+% load(filename);
+% cd(current_dir);
 %% Balance RBD & HC Cohort if needed
 
 % [patients,ia,ic] = unique(Sleep_table.SubjectIndex);
