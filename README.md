@@ -10,7 +10,7 @@ When using this code, please cite [our paper](**provide link**):
 
 This repository contains the tools to extract 130 features from a single EEG, EOG and EMG signal over 30s epochs. 
 
-A random forest classifier is provided to achieve automatic sleep staging, which was trained using 53 age-matched healthy control and RBD participants. A classifier can also be trained using this repository. Classifier should output one of the following sleep stages:
+A random forest classifier is provided to achieve automatic sleep staging, which was trained using 53 age-matched healthy control and RBD participants (but only with 50 trees, wheras the paper used 500). A classifier can also be trained using this repository. Classifier should output one of the following sleep stages:
 
 | Class  | Description |
 | ----- | -------------------:|

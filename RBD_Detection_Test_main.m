@@ -72,11 +72,13 @@ cd(current_dir);
 
 %% Load Trained Sleep Staging
 % File location of trained RF
+disp('Loading Trained Random Forest Sleep Stage Classifier - Only 50 trees (to conserve space)');
 ss_rf_filename = [pwd,'\data\','Sleep_Staging_RF.mat'];
 load(ss_rf_filename);
 
 %% Load Trained RBD Detection
 % File location of trained RF
+disp('Loading Trained Random Forest RBD Classifier');
 rbd_rf_filename = [pwd,'\data\','RBD_Detection_RF.mat'];
 load(rbd_rf_filename);
 
