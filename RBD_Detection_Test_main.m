@@ -62,70 +62,89 @@ cd(current_dir);
 
 %% Load Trained Sleep Staging
 % File location of trained RF
-ss_rf_filename = 'Sleep_Staging_RF.mat';
+ss_rf_filename = [pwd,'\data\','Sleep_Staging_RF.mat'];
 load(ss_rf_filename);
 
 %% Load Trained RBD Detection
 % File location of trained RF
-rbd_rf_filename = 'RBD_Detection_RF.mat';
+rbd_rf_filename = [pwd,'\data\','RBD_Detection_RF.mat'];
 load(rbd_rf_filename);
 
 %% Parameters for generating results
 view_results = 1; %Produce Graphs/figures
-print_figures= 1; %Save Graphs/figures
+print_figures= 0; %Save Graphs/figures
+print_folder = '';
 display_flag = 1; %Display results in command window
 save_data = 1; %Save Data
-outfilename = 'RBD_Detection_Results'; %Filename/Folder to be created
 
 %% Preprocess Data 
+%Ensure features in trained RF model match features from Data
 SS_Features = find(ismember(Sleep_table.Properties.VariableNames,ss_rf.PredictorNames));
-EMG_est_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_est_rf.PredictorNames));
-EMG_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_new_rf.PredictorNames));
-
 
 % Preprocess Sleep Staging Features
 disp('Precprocessing Features...');
 [Sleep_table_Pre] = RBD_RF_Preprocess(Sleep_table,[0,5],SS_Features);
 disp('Precprocessing Complete.');
-
-%% Cross Fold Indexing
 Sleep = table2array(Sleep_table_Pre);
 Sleep_tst = Sleep_table_Pre(:,SS_Features);
 [patients,ia,ic] = unique(Sleep_table_Pre.SubjectIndex);
 rbd_group = Sleep(ia,6)==5;
 
-
-%% Test Trained Sleep Staging
+%% Test Automated Sleep Staging
 
 [Yhat,votes] = Predict_SleepStaging_RF(ss_rf,Sleep_tst);
 
-%% Test Trained RBD Detection
+%% Show Results - Sleep Staging - working
 
-EMG_Table = Calculate_EMG_Values_table(Sleep_table_Pre);
+print_results(Sleep,a,[0,1,2,3,5],0,pwd,1);
+
+%% Test RBD Detection - Using Manually Annotated Sleep Staging
+
+EMG_Table = Calculate_EMG_Values_table(Sleep_table_Pre); %Calculate Features
+%Ensure features in trained RF model match features from Data
+EMG_est_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_est_rf.PredictorNames));
+EMG_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_new_rf.PredictorNames));
 
 % Preprocess Data
 [EMG_Table_Est] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
-EMG_Table_Est_Tst = EMG_Table_Est(:,2:end);
+EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis 
 [EMG_Table_New] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
-EMG_Table_New_Tst = EMG_Table_New(:,2:end);
+EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis 
 
 %Matlab Trees
 
 [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(rbd_est_rf,EMG_Table_Est_Tst);
 [EMG_new_Yhat,EMG_new_votes] = Predict_RBDDetection_RF(rbd_new_rf,EMG_Table_New_Tst);
 
+%% Test RBD Detection - Using Automatic Sleep Staging
+Auto_Sleep_table_Pre = Sleep_table_Pre;
+% Replace annotated sleep staging with automated sleep staging.
+Auto_Sleep_table_Pre.AnnotatedSleepStage = Yhat;
+Auto_EMG_Table = Calculate_EMG_Values_table(Auto_Sleep_table_Pre); %Calculate Features
 
-%% Display Results
+%Ensure features in trained RF model match features from Data
+Auto_EMG_est_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_est_rf.PredictorNames));
+Auto_EMG_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_new_rf.PredictorNames));
 
-%% Print Annotated Vs Automatic RBD Metrics
-%% Print RBD Detection Results
-print_folder = '';
+% Preprocess Data
+[Auto_EMG_Table_Est] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_est_feats);
+Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis 
+[Auto_EMG_Table_New] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_feats);
+Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis 
+
+%Matlab Trees
+
+[Auto_EMG_est_Yhat,Auto_EMG_est_votes] = Predict_RBDDetection_RF(rbd_est_rf,Auto_EMG_Table_Est_Tst);
+[Auto_EMG_new_Yhat,Auto_EMG_new_votes] = Predict_RBDDetection_RF(rbd_new_rf,Auto_EMG_Table_New_Tst);
+
+%% Display RBD Detection Results
+
 if (view_results)
    %Compare RBD Detection (annotated)
    label_name = 'Annotated';
-   compare_rbd_detection_results(table2array(EMG_Table),EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,0,print_folder,display_flag);
+   compare_rbd_detection_results(table2array(EMG_Table),EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
    label_name = 'Automated';
-   compare_rbd_detection_results(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
 end
 
 
