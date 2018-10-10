@@ -102,22 +102,19 @@ window = 60;
 % Long enough to allow reliable estimation of minimum noise level and shirt
 % enough to allow a variable adjustment of this correction throughout night
 
-EMG_mov_min = movingmeanmin(EMG_avg_amp,window,[],[]);
-
+%EMG_mov_min = movingmeanmin(EMG_avg_amp,window,[],[]);
+EMG_mov_min = 0;
 %% Substract Moving Minimum
 
 EMG_avg_amp_corr = EMG_avg_amp - EMG_mov_min';
 
 %% Determine if EMG signal is in micro and milli volts
-Factor = 1;
 if max(EMG_avg_amp_corr) > 10   
     %Microvolts
     EMG_avg_amp_corr_micro = EMG_avg_amp_corr;
-    Factor = 1;
 else
     %MilliVolts, change to micro
     EMG_avg_amp_corr_micro = EMG_avg_amp_corr*1000;
-    Factor = 1000;
 %     display('EMG in millivolts');
 end
 
@@ -142,12 +139,12 @@ num_epochs_30s = size(EMG_signal_epoched,2);
 K = mini_epoch_s*fs_avg;
 signal_epoched = buffer(EMG_avg_amp_corr_micro(1:30*num_epochs_30s*fs_avg), K); % signal segments with length K
 
-
+AI = zeros(num_epochs_30s,1);
 for i = 1:num_epochs_30s  
     tic
     x = signal_epoched(:,i); % this is a part of the signal (1 sec segment)
      %Class amplitudes into bins
-    [N,X]=hist(x,bin_val);
+    [N,~]=hist(x,bin_val);
     N_percent = N/sum(N)*100;
     AI(i) = N_percent(1)/(100-N_percent(2));    
 
@@ -162,7 +159,7 @@ for i = 1:num_epochs_30s
     %% EMG fractal exponent - Krakovska et al. 2011
     x3 = EMG_signal_epoched(:,i); 
     NFFT = 2^nextpow2(length(x3));
-    [pxx fxx] = periodogram(x3,hann(length(x3)),NFFT,fs);
+    [pxx, fxx] = periodogram(x3,hann(length(x3)),NFFT,fs);
     
     fxx_rng_idx = fxx<=100 & fxx>=10;
     fxx_rng = fxx(fxx_rng_idx);

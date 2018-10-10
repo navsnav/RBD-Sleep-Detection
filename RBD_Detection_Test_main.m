@@ -42,7 +42,7 @@ list_of_files = {
 
 download_CAP_EDF_Annotations(data_folder,list_of_files);
 %Prepare mat files with PSG signals and annotations
-prepare_capslpdb(data_folder,data_folder);
+%prepare_capslpdb(data_folder,data_folder);
 
 %% (C) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
 cd(main_dir);
