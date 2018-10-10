@@ -47,6 +47,7 @@ end
 
 
 %current_dir = pwd;
+fprintf('\nDownloading exemplary test data .. \n')
 
 % URL to download data from
 annotations_url = 'https://physionet.org/pn6/capslpdb/';
@@ -68,7 +69,7 @@ sc=0;
 fc=0;
 
 % Download gender-age info
-path_of_file = fullfile([download_dir,'\','gender-age.xlsx']);
+path_of_file = fullfile([download_dir,'gender-age.xlsx']);
 url_of_file = [annotations_url 'gender-age.xlsx'];
 fprintf('Downloading: %s for test %s\n', 'gender-age.xlsx');
 %[saved_file, status] = urlwrite(url_of_file,path_of_file);
@@ -77,7 +78,7 @@ if(~exist(path_of_file,'file'))
     fprintf('File saved: %s ... OK\n', saved_file);
     [num,txt,raw]  = xlsread(path_of_file);    
     M = table(txt(:,1),txt(:,2),num,'VariableNames',{'Pathology','Gender','Age'});
-    writetable(M,[download_dir,'\','gender-age.csv']);
+    writetable(M,[download_dir,'gender-age.csv']);
 else
     disp(['File existed: ', path_of_file]);
 end

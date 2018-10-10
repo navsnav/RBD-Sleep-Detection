@@ -45,7 +45,7 @@ prepare_capslpdb(outputfolder,outputfolder);
 
 %% (C) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
 cd('../');
-data_folder = [main_dir,'data'];
+data_folder = [pwd,'\data'];
 cd(current_dir);
 signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
 disp(['Extracting Features:',signals_for_processing]);
