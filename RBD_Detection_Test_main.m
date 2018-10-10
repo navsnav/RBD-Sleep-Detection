@@ -5,9 +5,10 @@ slashchar = char('/'*isunix + '\'*(~isunix));
 mainpath = (strrep(which(mfilename),['preparation' slashchar mfilename '.m'],''));
 main_dir = mainpath(1:end-length(mfilename)-2);
 
-addpath(genpath([main_dir, 'libs', slashchar])) % add subfunctions folder to path
+addpath(genpath([main_dir, 'libs', slashchar])) % add external libraries folder to path
 addpath(genpath([main_dir, 'subfunctions', slashchar])) % add subfunctions folder to path
-addpath(genpath([main_dir, 'dataprep', slashchar])) % add subfunctions folder to path
+addpath(genpath([main_dir, 'dataprep', slashchar])) % add data preparation folder to path
+addpath(genpath([main_dir, 'classifiers', slashchar])) % add classifiers folder to path
 
 %% Attain PSG Signals
 % There are several options to get PSG signals
@@ -23,7 +24,7 @@ addpath(genpath([main_dir, 'dataprep', slashchar])) % add subfunctions folder to
 
 %% (B) Download PSG Signals  - Use this section to download example edf files and annotations as a test
 cd(main_dir);
-outputfolder = [main_dir, 'data'];
+outputfolder = [main_dir, 'data', slashchar];
 
 % The following data will be downloaded from the CAPS database from
 % physionet
