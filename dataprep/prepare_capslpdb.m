@@ -255,7 +255,7 @@ for f = 1:length(fls)
        mkdir(outputfolder);
     end     
     %Saving results
-    save([outputfolder,'\',fls{f}(1:end-3),'mat'],'data','labels','patinfo','epoch')
+    save([outputfolder,fls{f}(1:end-3),'mat'],'data','labels','patinfo','epoch')
     clear infotxt startsamp lastsamp recstart stage anntm rem data labels patinfo signals r
 end
 end
