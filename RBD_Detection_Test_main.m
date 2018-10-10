@@ -2,8 +2,8 @@
 
 %% Add paths
 slashchar = char('/'*isunix + '\'*(~isunix));
-mainpath = (strrep(which(mfilename),['preparation' slashchar mfilename '.m'],''));
-main_dir = mainpath(1:end-length(mfilename)-2);
+main_dir = (strrep(which(mfilename),['preparation' slashchar mfilename '.m'],''));
+main_dir = main_dir(1:end-length(mfilename)-2);
 
 addpath(genpath([main_dir, 'libs', slashchar])) % add external libraries folder to path
 addpath(genpath([main_dir, 'subfunctions', slashchar])) % add subfunctions folder to path
@@ -24,7 +24,7 @@ addpath(genpath([main_dir, 'classifiers', slashchar])) % add classifiers folder 
 
 %% (B) Download PSG Signals  - Use this section to download example edf files and annotations as a test
 cd(main_dir);
-outputfolder = [main_dir, 'data', slashchar];
+data_folder = [main_dir, 'data', slashchar];
 
 % The following data will be downloaded from the CAPS database from
 % physionet
@@ -40,26 +40,24 @@ list_of_files = {
     'rbd4';
     'rbd5'};
 
-download_CAP_EDF_Annotations(outputfolder,list_of_files);
+download_CAP_EDF_Annotations(data_folder,list_of_files);
 %Prepare mat files with PSG signals and annotations
-prepare_capslpdb(outputfolder,outputfolder);
+prepare_capslpdb(data_folder,data_folder);
 
 %% (C) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
-data_folder = [main_dir,'data'];
 cd(main_dir);
 signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
 disp(['Extracting Features:',signals_for_processing]);
 % Generate Features
 [Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
 
-cd('../');
-output_folder = [pwd,'\data\features'];
+feature_folder = [data_folder, 'features', slashchar];
 % Create a destination directory if it doesn't exist
 if exist(output_folder, 'dir') ~= 7
     fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
     mkdir(output_folder);
 end
-cd(output_folder);
+cd(feature_folder);
 save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
 disp('Feature Extraction Complete and Saved');
 cd(current_dir);
