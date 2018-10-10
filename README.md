@@ -6,7 +6,7 @@
 
 When using this code, please cite [our paper](**provide link**): 
 
-> Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De Vos (Review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+> Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
 
 This repository contains the tools to extract 130 features from a single EEG, EOG and EMG signal over 30s epochs. 
 
