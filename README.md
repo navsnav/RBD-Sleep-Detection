@@ -10,7 +10,7 @@ When using this code, please cite [our paper](**provide link**):
 
 This repository contains the tools to extract 130 features from a single EEG, EOG and EMG signal over 30s epochs. 
 
-A random forest classifier is provided to achieve automatic sleep staging, which was trained using 53 age-matched healthy control and RBD participants. A classifier can also be trained using this repository. Classifier should output one of the following sleep stages:
+A random forest classifier is provided to achieve automatic sleep staging, which was trained using 53 age-matched healthy control and RBD participants (but only with 50 trees, wheras the paper used 500). A classifier can also be trained using this repository. Classifier should output one of the following sleep stages:
 
 | Class  | Description |
 | ----- | -------------------:|
@@ -53,4 +53,4 @@ You should have received a copy of the GNU General Public License along with thi
 
 When using this code, please cite [1].
 
-[1]:Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De Vos (Review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+[1]:Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De Vos (In Review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.

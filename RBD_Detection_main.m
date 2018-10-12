@@ -95,7 +95,7 @@ disp('Precprocessing Features...');
 disp('Precprocessing Complete.');
 
 % Random Forest paramters
-n_trees = 50;    
+n_trees = 50;  %Paper used 500 trees (done to save time/space)
 
 %% Cross Fold Indexing
 Sleep = table2array(Sleep_table_Pre);
@@ -108,7 +108,7 @@ indices = crossvalind('Kfold',rbd_group, folds);
 %% RBD Detection
 % Apply cross fold validation for automated sleep staging followed by RBD
 % detection using established metrics and new metrics
-
+disp(['Initiating ',num2str(folds),' fold cross validation with ',num2str(n_trees),' trees.']);
 [Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag);
 
 

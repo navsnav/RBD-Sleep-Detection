@@ -70,12 +70,14 @@ disp('Feature Extraction Complete and Saved');
 
 %% Load Trained Sleep Staging
 % File location of trained RF
+disp('Loading Trained Random Forest Sleep Stage Classifier - Only 50 trees (to conserve space)');
 models_folder = [main_dir, 'models', slashchar];
 ss_rf_filename = [models_folder,'Sleep_Staging_RF.mat'];
 load(ss_rf_filename);
 
 %% Load Trained RBD Detection
 % File location of trained RF
+disp('Loading Trained Random Forest RBD Classifier');
 rbd_rf_filename = [models_folder,'RBD_Detection_RF.mat'];
 load(rbd_rf_filename);
 
