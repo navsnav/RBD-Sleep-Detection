@@ -1,4 +1,4 @@
-% Code to test new data on previously trained models for sleep staging and RBD detection 
+% Code to test new data on previously trained models for sleep staging and RBD detection
 
 %% Add paths
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -8,18 +8,18 @@ main_dir = main_dir(1:end-length(mfilename)-2);
 addpath(genpath([main_dir, 'libs', slashchar])) % add external libraries folder to path
 addpath(genpath([main_dir, 'subfunctions', slashchar])) % add subfunctions folder to path
 addpath(genpath([main_dir, 'dataprep', slashchar])) % add data preparation folder to path
-addpath(genpath([main_dir, 'classifiers', slashchar])) % add classifiers folder to path
+addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to path
 
 %% Attain PSG Signals
 % There are several options to get PSG signals
 % (A) A folder containing all edf files and annotations
 % (B) Download files eg using CAP sleep database
-% (C) A folder containing all 'prepared' mat files of all PSG signals 
+% (C) A folder containing all 'prepared' mat files of all PSG signals
 % (D) Load Features matrix saved from ExtractFeatures
 
 %% (A) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
 % data_folder = 'I:\Data\CAP Sleep Database'; %Choose file location
-% outputfolder = [current_dir,'\data'];
+% outputfolder = [main_dir,'\data'];
 % prepare_capslpdb(data_folder,outputfolder);
 
 %% (B) Download PSG Signals  - Use this section to download example edf files and annotations as a test
@@ -42,44 +42,43 @@ list_of_files = {
 
 download_CAP_EDF_Annotations(data_folder,list_of_files);
 %Prepare mat files with PSG signals and annotations
-%prepare_capslpdb(data_folder,data_folder);
+prepare_capslpdb(data_folder,data_folder);
 
 %% (C) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
 cd(main_dir);
 signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
 disp(['Extracting Features:',signals_for_processing]);
 % Generate Features
-[Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
+[~, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
 
 feature_folder = [data_folder, 'features', slashchar];
 % Create a destination directory if it doesn't exist
-if exist(output_folder, 'dir') ~= 7
+if exist(feature_folder, 'dir') ~= 7
     fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
-    mkdir(output_folder);
+    mkdir(feature_folder);
 end
-cd(feature_folder);
-save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
+save([feature_folder, 'Features.mat'],'Sleep','Sleep_Struct','Sleep_table');
 disp('Feature Extraction Complete and Saved');
-cd(current_dir);
 
 %% (D) Load Features matrix saved from ExtractFeatures
-% current_dir = pwd;
+% main_dir = pwd;
 % data_folder = 'C:\Users\scro2778\Documents\GitHub\data\features';
 % cd(data_folder);
 % filename = 'Features.mat';
 % load(filename);
-% cd(current_dir);
+% cd(main_dir);
 
 %% Load Trained Sleep Staging
 % File location of trained RF
 disp('Loading Trained Random Forest Sleep Stage Classifier - Only 50 trees (to conserve space)');
-ss_rf_filename = [pwd,'\data\','Sleep_Staging_RF.mat'];
+models_folder = [main_dir, 'models', slashchar];
+ss_rf_filename = [models_folder,'Sleep_Staging_RF.mat'];
 load(ss_rf_filename);
 
 %% Load Trained RBD Detection
 % File location of trained RF
 disp('Loading Trained Random Forest RBD Classifier');
-rbd_rf_filename = [pwd,'\data\','RBD_Detection_RF.mat'];
+rbd_rf_filename = [models_folder,'RBD_Detection_RF.mat'];
 load(rbd_rf_filename);
 
 %% Parameters for generating results
@@ -89,7 +88,7 @@ print_folder = '';
 display_flag = 1; %Display results in command window
 save_data = 1; %Save Data
 
-%% Preprocess Data 
+%% Preprocess Data
 %Ensure features in trained RF model match features from Data
 SS_Features = find(ismember(Sleep_table.Properties.VariableNames,ss_rf.PredictorNames));
 
@@ -120,9 +119,9 @@ EMG_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_new_rf.Predicto
 
 % Preprocess Data
 [EMG_Table_Est] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
-EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis 
+EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
 [EMG_Table_New] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
-EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis 
+EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis
 
 %Matlab Trees
 
@@ -141,9 +140,9 @@ Auto_EMG_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_new_r
 
 % Preprocess Data
 [Auto_EMG_Table_Est] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_est_feats);
-Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis 
+Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
 [Auto_EMG_Table_New] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_feats);
-Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis 
+Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis
 
 %Matlab Trees
 
@@ -153,11 +152,11 @@ Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and 
 %% Display RBD Detection Results
 
 if (view_results)
-   %Compare RBD Detection (annotated)
-   label_name = 'Annotated';
-   compare_rbd_detection_results(table2array(EMG_Table),EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
-   label_name = 'Automated';
-   compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+    %Compare RBD Detection (annotated)
+    label_name = 'Annotated';
+    compare_rbd_detection_results(table2array(EMG_Table),EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+    label_name = 'Automated';
+    compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
 end
 
 
