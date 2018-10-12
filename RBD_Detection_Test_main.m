@@ -1,4 +1,4 @@
-% Code to test new data on previously trained models for sleep staging and RBD detection 
+% Code to test new data on previously trained models for sleep staging and RBD detection
 
 %% Add paths
 slashchar = char('/'*isunix + '\'*(~isunix));
@@ -14,7 +14,7 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 % There are several options to get PSG signals
 % (A) A folder containing all edf files and annotations
 % (B) Download files eg using CAP sleep database
-% (C) A folder containing all 'prepared' mat files of all PSG signals 
+% (C) A folder containing all 'prepared' mat files of all PSG signals
 % (D) Load Features matrix saved from ExtractFeatures
 
 %% (A) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
@@ -86,7 +86,7 @@ print_folder = '';
 display_flag = 1; %Display results in command window
 save_data = 1; %Save Data
 
-%% Preprocess Data 
+%% Preprocess Data
 %Ensure features in trained RF model match features from Data
 SS_Features = find(ismember(Sleep_table.Properties.VariableNames,ss_rf.PredictorNames));
 
@@ -117,9 +117,9 @@ EMG_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_new_rf.Predicto
 
 % Preprocess Data
 [EMG_Table_Est] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
-EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis 
+EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
 [EMG_Table_New] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
-EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis 
+EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis
 
 %Matlab Trees
 
@@ -138,9 +138,9 @@ Auto_EMG_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_new_r
 
 % Preprocess Data
 [Auto_EMG_Table_Est] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_est_feats);
-Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis 
+Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
 [Auto_EMG_Table_New] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_feats);
-Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis 
+Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis
 
 %Matlab Trees
 
@@ -150,11 +150,11 @@ Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and 
 %% Display RBD Detection Results
 
 if (view_results)
-   %Compare RBD Detection (annotated)
-   label_name = 'Annotated';
-   compare_rbd_detection_results(table2array(EMG_Table),EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
-   label_name = 'Automated';
-   compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+    %Compare RBD Detection (annotated)
+    label_name = 'Annotated';
+    compare_rbd_detection_results(table2array(EMG_Table),EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+    label_name = 'Automated';
+    compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
 end
 
 
