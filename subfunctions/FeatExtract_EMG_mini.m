@@ -103,7 +103,7 @@ window = 60;
 % enough to allow a variable adjustment of this correction throughout night
 
 %EMG_mov_min = movingmeanmin(EMG_avg_amp,window,[],[]);
-EMG_mov_min = 0;
+EMG_mov_min = movmin(EMG_avg_amp,window);
 %% Substract Moving Minimum
 
 EMG_avg_amp_corr = EMG_avg_amp - EMG_mov_min';
