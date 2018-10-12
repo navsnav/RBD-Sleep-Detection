@@ -2,7 +2,7 @@
 
 %% Add paths
 slashchar = char('/'*isunix + '\'*(~isunix));
-main_dir = (strrep(which(mfilename),['preparation' slashchar mfilename '.m'],''));
+main_dir = strrep(which(mfilename),[mfilename '.m'],'');
 main_dir = main_dir(1:end-length(mfilename)-2);
 
 addpath(genpath([main_dir, 'libs', slashchar])) % add external libraries folder to path
