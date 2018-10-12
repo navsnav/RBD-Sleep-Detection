@@ -8,7 +8,7 @@ main_dir = main_dir(1:end-length(mfilename)-2);
 addpath(genpath([main_dir, 'libs', slashchar])) % add external libraries folder to path
 addpath(genpath([main_dir, 'subfunctions', slashchar])) % add subfunctions folder to path
 addpath(genpath([main_dir, 'dataprep', slashchar])) % add data preparation folder to path
-addpath(genpath([main_dir, 'classifiers', slashchar])) % add classifiers folder to path
+addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to path
 
 %% Attain PSG Signals
 % There are several options to get PSG signals
@@ -19,7 +19,7 @@ addpath(genpath([main_dir, 'classifiers', slashchar])) % add classifiers folder 
 
 %% (A) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
 % data_folder = 'I:\Data\CAP Sleep Database'; %Choose file location
-% outputfolder = [current_dir,'\data'];
+% outputfolder = [main_dir,'\data'];
 % prepare_capslpdb(data_folder,outputfolder);
 
 %% (B) Download PSG Signals  - Use this section to download example edf files and annotations as a test
@@ -53,31 +53,30 @@ disp(['Extracting Features:',signals_for_processing]);
 
 feature_folder = [data_folder, 'features', slashchar];
 % Create a destination directory if it doesn't exist
-if exist(output_folder, 'dir') ~= 7
+if exist(feature_folder, 'dir') ~= 7
     fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
-    mkdir(output_folder);
+    mkdir(feature_folder);
 end
-cd(feature_folder);
-save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
+save([feature_folder, 'Features.mat'],'Sleep','Sleep_Struct','Sleep_table');
 disp('Feature Extraction Complete and Saved');
-cd(current_dir);
 
 %% (D) Load Features matrix saved from ExtractFeatures
-% current_dir = pwd;
+% main_dir = pwd;
 % data_folder = 'C:\Users\scro2778\Documents\GitHub\data\features';
 % cd(data_folder);
 % filename = 'Features.mat';
 % load(filename);
-% cd(current_dir);
+% cd(main_dir);
 
 %% Load Trained Sleep Staging
 % File location of trained RF
-ss_rf_filename = [pwd,'\data\','Sleep_Staging_RF.mat'];
+models_folder = [main_dir, 'models', slashchar];
+ss_rf_filename = [models_folder,'Sleep_Staging_RF.mat'];
 load(ss_rf_filename);
 
 %% Load Trained RBD Detection
 % File location of trained RF
-rbd_rf_filename = [pwd,'\data\','RBD_Detection_RF.mat'];
+rbd_rf_filename = [models_folder,'RBD_Detection_RF.mat'];
 load(rbd_rf_filename);
 
 %% Parameters for generating results
