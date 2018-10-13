@@ -3,7 +3,6 @@
 %% Add paths
 slashchar = char('/'*isunix + '\'*(~isunix));
 main_dir = strrep(which(mfilename),[mfilename '.m'],'');
-main_dir = main_dir(1:end-length(mfilename)-2);
 
 addpath(genpath([main_dir, 'libs', slashchar])) % add external libraries folder to path
 addpath(genpath([main_dir, 'subfunctions', slashchar])) % add subfunctions folder to path
@@ -113,17 +112,18 @@ print_results(Sleep,Yhat,states,print_figures,print_folder,display_flag);
 %% Test RBD Detection - Using Manually Annotated Sleep Staging
 
 EMG_Table = Calculate_EMG_Values_table(Sleep_table_Pre); %Calculate Features
-%Ensure features in trained RF model match features from Data
+% Ensure features in trained RF model match features from Data
 EMG_est_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_est_rf.PredictorNames));
 EMG_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_new_rf.PredictorNames));
 
 % Preprocess Data
-[EMG_Table_Est] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
+[EMG_Table_Est,rmv_idx] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
 EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
+
 [EMG_Table_New] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
 EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis
 
-%Matlab Trees
+% Matlab Trees
 
 [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(rbd_est_rf,EMG_Table_Est_Tst);
 [EMG_new_Yhat,EMG_new_votes] = Predict_RBDDetection_RF(rbd_new_rf,EMG_Table_New_Tst);
@@ -134,7 +134,7 @@ Auto_Sleep_table_Pre = Sleep_table_Pre;
 Auto_Sleep_table_Pre.AnnotatedSleepStage = Yhat;
 Auto_EMG_Table = Calculate_EMG_Values_table(Auto_Sleep_table_Pre); %Calculate Features
 
-%Ensure features in trained RF model match features from Data
+% Ensure features in trained RF model match features from Data
 Auto_EMG_est_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_est_rf.PredictorNames));
 Auto_EMG_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_new_rf.PredictorNames));
 
@@ -154,9 +154,9 @@ Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and 
 if (view_results)
     %Compare RBD Detection (annotated)
     label_name = 'Annotated';
-    compare_rbd_detection_results(table2array(EMG_Table),EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+    compare_rbd_detection_results(table2array(EMG_Table),EMG_Table_Est,EMG_Table_New,EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,label_name,print_figures,print_folder,display_flag);
     label_name = 'Automated';
-    compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+    compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_Table_Est,Auto_EMG_Table_New,Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,label_name,print_figures,print_folder,display_flag);
 end
 
 

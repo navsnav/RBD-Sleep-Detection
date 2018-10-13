@@ -1,4 +1,4 @@
-function [Sleep_table_Pre] = RBD_RF_Preprocess(Sleep_table,patient_codes,Features)
+function [Sleep_table_Pre,removed_idx] = RBD_RF_Preprocess(Sleep_table,patient_codes,Features)
   % Copyright (c) 2018, Navin Cooray (University of Oxford)
   % All rights reserved.
   %
@@ -81,6 +81,14 @@ Sleep(unique(rowInf),:) = [];
 %% Convert Sleep Stages to AASM (A,N1,N2,N3 & REM)
 [rowSWS colSWS] = find(Sleep(:,7)==4);
 Sleep(rowSWS,7) = 3;
+
+%% If all indicies of a subject are removed provide warning
+
+if ~all(ismember(unique_patients,unique(Sleep(:,1))))
+   warning('Entire Subject Removed due to inf/NAN'); 
+end
+
+removed_idx = [row;rowInf];
 
 %%
 

@@ -1,5 +1,75 @@
-function EMG_Table = Calculate_EMG_Values_table(Sleep_table)%,hyp,condition,feat_num,MAD_Dur_feat,MAD_Per_feat,Var_feat,Fractal_Exp_feat)
-    % Generate EMG metrics from extracted features
+function EMG_Table = Calculate_EMG_Values_table(Sleep_table)
+% This function generate EMG metrics from extracted features
+%
+% Inputs:
+%  Sleep_table : Table structure for features (for every epoch and participant)
+%                that contains the following variables: 
+%                   -EMG_AtoniaIndex
+%                   -EMG_Motor_Activity_Dur
+%                   -EMG_Motor_Activity_Thresh
+%                   -EMG_Variance
+%                   -EMG_fractal_exponent
+% Ouput: 
+%   EMG_Table : Table structure that contains metrics for each subjects:
+%                   -RBD: Subject is RBD Participant (1) or not (0)                    
+%                   -AI_REM: Atonia Index (REM)
+%                   -AI_N3: Atonia Index (N3)
+%                   -AI_N2: Atonia Index (N2)
+%                   -AI_W: Atonia Index (W)
+%                   -MAD_Dur: Motor Activity Detection (Duration)
+%                   -MAD_Per: Motor Activity Detection (Percent) 
+%                   -Stream: STREAM value
+%                   -AI_Ratio_REM_N2: Atonia Index ratio N2/REM
+%                   -AI_Ratio_REM_N3: Atonia Index ratio N3/REM
+%                   -AI_Ratio_REM_W: Atonia Index ratio W/REM
+%                   -ratio_w: Ratio of Wake epochs
+%                   -ratio_n2: Ratio of N2 epochs
+%                   -ratio_n3: Ratio of N3 epochs
+%                   -ratio_rem: Ratio of REM epochs
+%                   -Sleep_Eff: Sleep efficiency
+%                   -REM_Latency: REM sleep latency 
+%                   -REM_Num_Periods: Number of REM periods
+%                   -AI_REM_75: Atonia Index (REM) 75th Percentile 
+%                   -AI_N3_75: Atonia Index (N3) 75th Percentile 
+%                   -AI_N2_75: Atonia Index (N2) 75th Percentile 
+%                   -AI_W_75: Atonia Index (W) 75th Percentile 
+%                   -AI_REM_25: Atonia Index (REM) 25th Percentile 
+%                   -AI_N3_25: Atonia Index (N3) 25th Percentile 
+%                   -AI_N2_25: Atonia Index (N2) 25th Percentile 
+%                   -AI_W_25: Atonia Index (W) 25th Percentile 
+%                   -Fractal_Exp_REM: Fractal Exponent (REM)
+%                   -Fractal_Exp_REM_75: Fractal Exponent (REM), 75th
+%                   -Fractal_Exp_N3: Fractal Exponent (N3)
+%                   -Fractal_Exp_N3_75: Fractal Exponent (N3), 75th
+%                   -Fractal_Exp_N2: Fractal Exponent (N2)
+%                   -Fractal_Exp_N2_75: Fractal Exponent (N2), 75th
+% --
+% RBD Sleep Detection Toolbox, version 1.0, November 2018
+% Released under the GNU General Public License
+%
+% Copyright (C) 2018  Navin Cooray
+% Institute of Biomedical Engineering
+% Department of Engineering Science
+% University of Oxford
+% navin.cooray@eng.ox.ac.uk
+%
+%
+% Referencing this work
+% Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De % Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+%
+% Last updated : 15-10-2018
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
 
     Subject = unique(Sleep_table.SubjectIndex);
     
@@ -129,12 +199,6 @@ function EMG_Table = Calculate_EMG_Values_table(Sleep_table)%,hyp,condition,feat
 
     end
     
-%     T = table(Subjects,RBD',AI_REM',AI_N3',AI_N2',AI_W',CAP_HC_Actual_MAD_Dur',CAP_HC_Actual_MAD_Per'...
-%         ,Stream_score',AI_Ratio_REM_N2',AI_Ratio_REM_N3',AI_Ratio_REM_W',epoch_ratio_w',epoch_ratio_n2'...
-%         ,epoch_ratio_n3',epoch_ratio_rem');
-%     T.Properties.VariableNames = {'Subject','RBD','AI_REM','AI_N3','AI_N2','AI_W','MAD_Dur','MAD_Per'...
-%         ,'STREAM','AI_Ratio_R_N2','AI_Ratio_R_N3','AI_Ratio_R_W','W_ratio','N2_ratio','N3_ratio','R_ratio'};    
-
     EMG_Table = T;
 
 end
