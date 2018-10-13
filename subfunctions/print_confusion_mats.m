@@ -1,4 +1,46 @@
-function    All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat,rbd,print_figures,print_folder)
+function    All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat,print_figures,print_folder)
+% This function combines all individial subject confusion matrices for
+% sleep staging and generates figures for comparison of automated and
+% annoated sleep staging (hypnograms) 
+%
+% Inputs:
+%  Sleep    - Matrix with all features for every epoch
+%  Sleep_Struct   - Structure with all features for every epoch, includes
+%                   subject names
+%  Yhat - Results of automated sleep staging for each epoch
+%  print_figures - flag to print/save figures of results
+%  print_folder - folder to save figures
+% Outputs:
+%  All_Confusion - summated confusion matrix of all subjects
+%
+% --
+% RBD Sleep Detection Toolbox, version 1.0, November 2018
+% Released under the GNU General Public License
+%
+% Copyright (C) 2018  Navin Cooray
+% Institute of Biomedical Engineering
+% Department of Engineering Science
+% University of Oxford
+% navin.cooray@eng.ox.ac.uk
+%
+%
+% Referencing this work
+% Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De % Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+%
+% Last updated : 15-10-2018
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 num_subjects = unique(Sleep(:,1));
 Subject = fieldnames((Sleep_Struct));   

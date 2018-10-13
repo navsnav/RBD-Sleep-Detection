@@ -1,4 +1,5 @@
 function MAE_epoch = Find_MAE(AC_Act_Delta_30s,EMG_Baseline_min,fs,min_mae_dur,mae_iei,madt)
+% This function calculates the motor activity events as per Frandsen et al
 % Input:
 %       AC_Act_Delta_30s: Activity signal as defined by Frandsen et al.
 %       EMG_Baseline_min: EMG Baseline as defined by Frandsen et al.
@@ -10,6 +11,35 @@ function MAE_epoch = Find_MAE(AC_Act_Delta_30s,EMG_Baseline_min,fs,min_mae_dur,m
 %       MAE_epoch: Motor acticity detection 
 %           -1st column:  motor acticity duration in seconds in epoch
 %           -2nd column:  motor acticity as a percentage of epoch  
+%
+% --
+% RBD Sleep Detection Toolbox, version 1.0, November 2018
+% Released under the GNU General Public License
+%
+% Copyright (C) 2018  Navin Cooray
+% Institute of Biomedical Engineering
+% Department of Engineering Science
+% University of Oxford
+% navin.cooray@eng.ox.ac.uk
+%
+%
+% Referencing this work
+% Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De % Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+%
+% Last updated : 15-10-2018
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 MAE_epoch = zeros(size(EMG_Baseline_min));
 

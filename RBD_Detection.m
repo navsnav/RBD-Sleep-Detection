@@ -281,7 +281,7 @@ end
 
 %% Print Confusion Matrices/Hypnograms
 if (view_results)
-    All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat_Results,rbd_group,print_figures,print_folder);
+    All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat_Results,print_figures,print_folder);
 end
 
 %%

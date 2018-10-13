@@ -17,9 +17,6 @@ function compare_rbd_detection_results(EMG_Metric,EMG_Table_Est,EMG_Table_New,EM
 %  print_figures - flag to save figures
 %  print_folder - folder name to save figures in
 %  display_flag - flag to display figures
-% Output:
-%   
-
 % --
 % RBD Sleep Detection Toolbox, version 1.0, November 2018
 % Released under the GNU General Public License

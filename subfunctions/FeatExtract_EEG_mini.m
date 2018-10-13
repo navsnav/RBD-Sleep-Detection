@@ -1,34 +1,3 @@
-% (c) Athanasios Tsanas, October 2012
-%       last updated 2 March 2016
-% (c) Navin Cooray, July 2016
-%       last updated 18 July 2016
-
-%% Version 1 
-% Implement original code with 30s averages
-
-%% Version 2
-% Updated Scaling to microvolts
-% Look to implemented updated/improved feature extraction 
-
-%% Version 4
-% Updated function to include preprocess filter parameters
-
-%% Version 5
-% Normalise Features based on awake stage
-% Expanded all structures
-
-%% Version 7
-% Normalise Features based on awake stage but all turned off (set to zero)
-% Expanded all structures
-% Substract Mean EEG from total signal (Normalisation)
-
-%% Version 9
-% Bandpass signal before feature extraction
-
-%% Version 10
-% Spindle Count
-
-%%
 function [features, features_struct_30s,eeg_data_signal,features_struct] = FeatExtract_EEG_mini(data_signal1, fs,epoch_time,feature_time)
 % function to process an EEG signal for feature extraction
 % Input:
@@ -42,6 +11,35 @@ function [features, features_struct_30s,eeg_data_signal,features_struct] = FeatE
 %       features_struct_30s:   Structure with subject and feature extracted for each signal for every epoch_time (s)   
 %       eeg_data_signal:   EEG signal   
 %       features_struct:   Structure with subject and feature extracted for each signal for every feature_time (s)  
+% --
+% RBD Sleep Detection Toolbox, version 1.0, November 2018
+% Released under the GNU General Public License
+%
+% Copyright (C) 2018  Navin Cooray
+% Institute of Biomedical Engineering
+% Department of Engineering Science
+% University of Oxford
+% navin.cooray@eng.ox.ac.uk
+%
+%
+% Referencing this work
+% Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De % Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+%
+% Last updated : 15-10-2018
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 %% Ensure EEG signal is calibrated to microvolts
 Factor = 1;
 if max(data_signal1) > 10   
