@@ -1,5 +1,5 @@
 function [All_T, REM_T] = print_performance_table(table_name,Accuracy,Sensitivity,Specificity,Precision,Recall,F1,CohenKappa,states,print_figures,print_folder)
-% This function generated performance table based on performance measures
+% This function generates performance tables based on performance measures
 %
 % Inputs:
 %  table_name    - name of table to be saved

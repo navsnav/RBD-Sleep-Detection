@@ -1,37 +1,7 @@
 function [Sleep_table_Pre,removed_idx] = RBD_RF_Preprocess(Sleep_table,patient_codes,Features)
-  % Copyright (c) 2018, Navin Cooray (University of Oxford)
-  % All rights reserved.
-  %
-  % Redistribution and use in source and binary forms, with or without
-  % modification, are permitted provided that the following conditions are
-  % met:
-  %
-  % 1. Redistributions of source code must retain the above copyright
-  %    notice, this list of conditions and the following disclaimer.
-  %
-  % 2. Redistributions in binary form must reproduce the above copyright
-  %    notice, this list of conditions and the following disclaimer in the
-  %    documentation and/or other materials provided with the distribution.
-  %
-  % 3. Neither the name of the University of Oxford nor the names of its
-  %    contributors may be used to endorse or promote products derived
-  %    from this software without specific prior written permission.
-  %
-  % THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  % "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  % LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-  % A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-  % HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  % SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  % LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-  % DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-  % THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  % (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  % OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-  %	Contact: navsnav@gmail.com
-  %	Originally written by Navin Cooray 19-Sept-2018
-
+% This function pre-processes a feature able to remove rows with NaNs/infs
+% and sleep stages that might not considered (movement/artifacts)
+%
 % Input:
 %       Sleep_table:    Sleep table with all features and subjects.
 %       patient_codes: 	Include subject codes included in this array eg
@@ -40,6 +10,35 @@ function [Sleep_table_Pre,removed_idx] = RBD_RF_Preprocess(Sleep_table,patient_c
 % Output:
 %       Sleep_table_Pre:    Preprocessed table to remove nans/inf 
 %                           for all included patients codes.
+%
+% --
+% RBD Sleep Detection Toolbox, version 1.0, November 2018
+% Released under the GNU General Public License
+%
+% Copyright (C) 2018  Navin Cooray
+% Institute of Biomedical Engineering
+% Department of Engineering Science
+% University of Oxford
+% navin.cooray@eng.ox.ac.uk
+%
+%
+% Referencing this work
+% Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De % Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+%
+% Last updated : 15-10-2018
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
   
   
 Sleep = table2array(Sleep_table);
