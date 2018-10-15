@@ -117,12 +117,16 @@ EMG_est_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_est_rf.Pred
 EMG_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_new_rf.PredictorNames));
 
 % Preprocess Data
-[EMG_Table_Est,rmv_idx] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
-EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
+% [EMG_Table_Est,rmv_idx] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
+EMG_Table_Est = EMG_Table(:,[2,EMG_est_feats]); 
+% EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
+EMG_Table_Est_Tst = EMG_Table(:,EMG_est_feats); %Remove Subject Index and Diagnosis
 
-[EMG_Table_New] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
-EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis
 
+% [EMG_Table_New] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
+EMG_Table_New = EMG_Table(:,[2,EMG_feats]);
+% EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis
+EMG_Table_New_Tst  = EMG_Table(:,EMG_feats); %Remove Subject Index and Diagnosis
 % Matlab Trees
 
 [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(rbd_est_rf,EMG_Table_Est_Tst);
@@ -139,11 +143,15 @@ Auto_EMG_est_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_e
 Auto_EMG_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_new_rf.PredictorNames));
 
 % Preprocess Data
-[Auto_EMG_Table_Est] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_est_feats);
-Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
-[Auto_EMG_Table_New] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_feats);
-Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis
+% [Auto_EMG_Table_Est] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_est_feats);
+Auto_EMG_Table_Est = Auto_EMG_Table(:,[2,EMG_est_feats]);
+% Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
+Auto_EMG_Table_Est_Tst = Auto_EMG_Table(:,EMG_est_feats);
 
+% [Auto_EMG_Table_New] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_feats);
+Auto_EMG_Table_New = Auto_EMG_Table(:,[2,EMG_feats]);
+% Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis
+Auto_EMG_Table_New_Tst = Auto_EMG_Table(:,EMG_feats);
 %Matlab Trees
 
 [Auto_EMG_est_Yhat,Auto_EMG_est_votes] = Predict_RBDDetection_RF(rbd_est_rf,Auto_EMG_Table_Est_Tst);
