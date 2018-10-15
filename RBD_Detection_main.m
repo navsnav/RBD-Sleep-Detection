@@ -3,10 +3,14 @@
 % Detection
 
 %% Add paths
-current_dir = pwd;
-addpath(strcat(pwd,'\libs\'));
-addpath(strcat(pwd,'\subfunctions\'));
-addpath(strcat(pwd,'\dataprep\'));
+slashchar = char('/'*isunix + '\'*(~isunix));
+main_dir = strrep(which(mfilename),[mfilename '.m'],'');
+
+addpath(genpath([main_dir, 'libs', slashchar])) % add external libraries folder to path
+addpath(genpath([main_dir, 'subfunctions', slashchar])) % add subfunctions folder to path
+addpath(genpath([main_dir, 'dataprep', slashchar])) % add data preparation folder to path
+addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to path
+
 
 %% Attain PSG Signals
 % There are several options to get PSG signals
