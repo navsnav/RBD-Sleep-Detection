@@ -1,6 +1,15 @@
 function [riseSlope,fallSlope] = slopeHelper(sig,peakLoc,peak,prom,range)
 %Provide slope information for peaks
-
+% Input:
+%       sig: input signal
+%       peakLoc: index of peak value
+%       peak: peak value
+%       prom: peak prominence 
+%       range: range around peak location
+% Output:
+%       riseSlope: slope value on rise to peak             
+%       fallSlope: slope value on fall from peak 
+%
 % References:
 %Yetton BD, Niknazar M, Duggan KA, McDevitt EA, Whitehurst LN, Sattari N, et al.
 %Automatic detection of rapid eye movements (REMs): A machine learning approach. J Neurosci Methods. 2016;259:72–82. 
