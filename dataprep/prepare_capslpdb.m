@@ -1,4 +1,44 @@
 function prepare_capslpdb(filename,outputfolder)
+% This function prepares data from raw edf/txt files of PSG recordings.
+% Specifically preparing data for each subject that provides neccessary
+% signals (eg. EEG, EOG, EMG etc). Data is saved in mat format within
+% folder
+%
+% Inputs:
+%  filename    - location folder of PSG recordings
+%  outputfolder   - folder to save prepared PSG signals in mat format for
+%                   each subject
+%
+%
+% --
+% RBD Sleep Detection Toolbox, version 1.0, November 2018
+% Released under the GNU General Public License
+%
+% Copyright (C) 2018  Navin Cooray
+% Institute of Biomedical Engineering
+% Department of Engineering Science
+% University of Oxford
+% navin.cooray@eng.ox.ac.uk
+%
+%
+% Referencing this work
+% Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De % Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
+%
+% Last updated : 15-10-2018
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+%
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 cd(filename)
 fls = dir('*.edf');
 fls = arrayfun(@(x) x.name,fls,'UniformOutput',false);
