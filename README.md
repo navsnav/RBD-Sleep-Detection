@@ -4,7 +4,7 @@
 ## Sleep Staging and RBD Detection
 #### Code used in paper: Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis
 
-When using this code, please cite [our paper](**provide link**): 
+When using this code, please cite [1]: 
 
 > Navin Cooray, Fernando Andreotti, Christine Lo, Mkael Symmonds, Michele T.M. Hu, & Maarten De Vos (in review). Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis. Clinical Neurophysiology.
 
@@ -31,6 +31,25 @@ An additional random forest classifier is provided to achieve RBD detection usin
 
 * Matlab Random Forest Model - Sleep Staging (`data` folder)
 * Matlab Random Forest Model - RBD Detection  (`data` folder)
+
+## Getting Started
+
+RBD_Detection_Demo.m:
+Use this file to run a quick demonstration of automatic sleep staging and RBD detection using PSG recordings that will download automatically from the physionet CAP sleep database. Automatic sleep staging and results will be processed and displayed using a random forst mondel previously trained, as described in [1]. This will be followed by RBD detection using annoated and automatic sleep staging, using a previosuly trained random forest model as descrubed in [1]. Simply run this file to view results taht will be displayed on the command window. To view figures and graphs, change flags: print_figures 0->1.
+
+RBD_Detection_main.m
+Use this file to emulate the cross-fold evaluation described in [1] to assess the random forest automatic sleep stage classifier. Additionally the RBD detection method will also be evaluated using annotated and automated sleep staging using established and new metrics. This file can be used in 4 ways:
+
+| Scenario  | Description |
+| ----- | -------------------:|
+| A | A folder containing all edf files and annotations |
+| B | Download demo files eg using CAP sleep database |
+| C | A folder containing all 'prepared' mat files of all PSG signals (previously generated) |
+| D | Load Features matrix saved from ExtractFeatures (previously generated) |
+
+The file is configured to run in scenario B and will download 10 files (5 healthy controls and 5 RBD participants) from  physionet [The CAPS Sleep Database](https://physionet.org/pn6/capslpdb/). Simply run this file and PSG will be downloaded, PSG signals will be prepared and features extracted. To evaluate the sleep staging and rbd detection, cross-fold evlauation is then computed and results displayed and saved. Default flags are configured to print and save all graphs and figures. 
+
+To initate other scenarios simply comment and uncomment sections ascociated with desired scenarios. 
 
 ## Downloading data
 
