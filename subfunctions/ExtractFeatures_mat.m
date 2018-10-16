@@ -1,11 +1,11 @@
 function [All_Sleep, Sleep_Struct, All_Sleep_T] = ExtractFeatures_mat(dbpath,signals_for_processing)
 % Main function to extract features from multichannel PSG recordings
-% 
+%
 % Input:
 %       dbpath:     Path to directory containing recordings. Recordings are
 %       individual .mat files for each subject containing the following variables:
 %       - data:     matrix of epoched signals with dimensions (#EPOCH, EPOCH_LENGTH, CHANNELS)
-%       - labels:  annotation for each epoch containing sleep stages in format (#EPOCH, 5) with 
+%       - labels:  annotation for each epoch containing sleep stages in format (#EPOCH, 5) with
 %       sleep stages coded as [W,R,N1,N2,N3]
 %       - patinfo: information on patient data such as sampling frequency, age and gender.
 %       signals_for_processing: Cell string array, with signal names for
@@ -13,8 +13,8 @@ function [All_Sleep, Sleep_Struct, All_Sleep_T] = ExtractFeatures_mat(dbpath,sig
 % Output:
 %       All_Sleep:      matrix with all features for all recordings for each
 %                       specified epoch
-%       Sleep_Struct:   Structure for each subject and feature extracted for each signal and epoch   
-%       All_Sleep_T:    Table with all features for all recordings for each specified epoch     
+%       Sleep_Struct:   Structure for each subject and feature extracted for each signal and epoch
+%       All_Sleep_T:    Table with all features for all recordings for each specified epoch
 %
 % --
 % RBD Sleep Detection Toolbox, version 1.0, November 2018
@@ -44,7 +44,7 @@ function [All_Sleep, Sleep_Struct, All_Sleep_T] = ExtractFeatures_mat(dbpath,sig
 %
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-  
+
 
 
 %% Input check
@@ -74,8 +74,8 @@ for f=1:length(fls)
     % Loading recording
     load([dbpath fls{f}]);
     disp(['Extracting Features From: ',fls{f}]);
-%%
-
+    %%
+    
     hyp_cap = labels;
     hyp = zeros(size(hyp_cap,1),1);
     
@@ -95,10 +95,10 @@ for f=1:length(fls)
     hyp(N1_idx) = 1;
     hyp(N2_idx) = 2;
     hyp(N3_idx) = 3;
-    hyp(R_idx) = 5;    
+    hyp(R_idx) = 5;
     
     hyp(:,2) = linspace(0,(size(hyp,1)-1)*30,size(hyp,1));
-%%    
+    %%
     K = length(hyp);
     
     Sleep = ones(K,1)*f; % subject_index
@@ -108,12 +108,12 @@ for f=1:length(fls)
     Sleep(:,8) = ones(K,1)*(hyp(end,2) - hyp(1,2))/3600; % sleep duration
     Sleep(:,9) = hyp(:,2); % sleep duration
     Sleep(:,10) = 0; % time hypnogram starts
-   
+    
     % ==============
     aaa = char(fls{f});
-    s1 = regexp(aaa, '[1-9]'); 
+    s1 = regexp(aaa, '[1-9]');
     name_category{f} = aaa(1:s1(1)-1);
-    subject = aaa(1:end-4);   
+    subject = aaa(1:end-4);
     subject = strrep(subject,'-','_');
     % depending on the subject category, populate the 6th column
     switch (name_category{f})
@@ -121,11 +121,11 @@ for f=1:length(fls)
             Sleep(:,6) = 0; % normal
             
         case 'nfle' % nocturnal frontal lobe epilepsy
-            Sleep(:,6) = 1;            
+            Sleep(:,6) = 1;
             
         case 'brux' % Bruxism
             Sleep(:,6) = 2; % normal
-
+            
         case 'ins' % insomnia
             Sleep(:,6) = 3; % normal
             
@@ -133,20 +133,20 @@ for f=1:length(fls)
             Sleep(:,6) = 4; % normal
             
         case 'rbd' % RBD
-            Sleep(:,6) = 5; % normal  
+            Sleep(:,6) = 5; % normal
             
         case 'SS' % HC
-            Sleep(:,6) = 0; % normal 
+            Sleep(:,6) = 0; % normal
             
         case 'Patient_N' % RBD
-            Sleep(:,6) = 5; % normal             
+            Sleep(:,6) = 5; % normal
             
         otherwise % problem!
             Sleep(:,6) = -1; % check out if we get that
     end
- %%
-     Sleep_names = {};
-     Sleep_names = { ...
+    %%
+    Sleep_names = {};
+    Sleep_names = { ...
         'SubjectIndex',...
         'Age',...
         'Sex',...
@@ -156,73 +156,73 @@ for f=1:length(fls)
         'AnnotatedSleepStage',...
         'SleepDuration',...
         'AbsoluteTiming_s',...
-        'TimePersonWentToBed'}; 
+        'TimePersonWentToBed'};
     
     for j = 1:length(signals_for_processing)
-    
-    % Remove NaNs
-    data(any(any(isnan(data),3),2),:,:) = [];
-
-    switch char(signals_for_processing(j))
-        case {'EEG'}    
-        feature_time = 10;            
-        EEG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));   
-        data_signal = squeeze(data(:,:,EEG_CHAN))';
-        data_signal = reshape(data_signal,numel(data_signal),1);
-        % Extracting EEG features
-        [eeg_feats, features_struct_30s,eeg_data_signal,features_struct] = FeatExtract_EEG_mini(data_signal, fs,epoch_time,feature_time); 
-        Sleep_Struct.(subject).EEG = features_struct_30s;
-        EEGSnamesSubjects = fieldnames(features_struct_30s)';    
-        Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EEGSnamesSubjects)) = EEGSnamesSubjects;    
-
-        case {'EOG'}    
-        EOG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));            
-        % Extracting EOG features
-        feature_time = 10;         
-        data_signal = squeeze(data(:,:,EOG_CHAN))';
-        data_signal = reshape(data_signal,numel(data_signal),1);        
-        [eog_feats, features_struct_30s,eog_data_signal,features_struct] = FeatExtract_EOG_mini(data_signal, fs,epoch_time,feature_time); 
-        Sleep_Struct.(subject).EOG = features_struct_30s;
-        EOGSnamesSubjects = fieldnames(features_struct_30s)';    
-        Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EOGSnamesSubjects)) = EOGSnamesSubjects;    
         
-        case {'EMG'}    
-        EMG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));            
-            % Extracting EMG features
-        data_signal = squeeze(data(:,:,EMG_CHAN))';
-        data_signal = reshape(data_signal,numel(data_signal),1);             
-        [emg_feats, features_struct_30s, emg_data_signal,features_struct] = FeatExtract_EMG_mini(data_signal, fs,epoch_time, hyp);
-        Sleep_Struct.(subject).EMG = features_struct_30s;
-        EMGSnamesSubjects = fieldnames(features_struct_30s)';    
-        Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EMGSnamesSubjects)) = EMGSnamesSubjects;    
-
-        case {'EEG-EOG'}    
-    %     Extracting EEG/EOG features
-        feature_time = 10;            
-        [eeg_eog_feats, features_struct_30s,features_struct] = FeatExtract_EEGEOG_mini(eeg_data_signal,eog_data_signal,fs,epoch_time,feature_time);        
-        Sleep_Struct.(subject).EEGEOG = features_struct_30s;
-        EEGEOGSnamesSubjects = fieldnames(features_struct_30s)';    
-        Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EEGEOGSnamesSubjects)) = EEGEOGSnamesSubjects;    
-
-        otherwise
-        warning(['Signal ' char(signals_for_processing(j)) ' not found!']);    
-    end
-
-    %% labels
-    
-%     save(['features_' fls{f}],'Sleep')
+        % Remove NaNs
+        data(any(any(isnan(data),3),2),:,:) = [];
+        
+        switch char(signals_for_processing(j))
+            case {'EEG'}
+                feature_time = 10;
+                EEG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));
+                data_signal = squeeze(data(:,:,EEG_CHAN))';
+                data_signal = reshape(data_signal,numel(data_signal),1);
+                % Extracting EEG features
+                [eeg_feats, features_struct_30s,eeg_data_signal,features_struct] = FeatExtract_EEG_mini(data_signal, fs,epoch_time,feature_time);
+                Sleep_Struct.(subject).EEG = features_struct_30s;
+                EEGSnamesSubjects = fieldnames(features_struct_30s)';
+                Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EEGSnamesSubjects)) = EEGSnamesSubjects;
+                
+            case {'EOG'}
+                EOG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));
+                % Extracting EOG features
+                feature_time = 10;
+                data_signal = squeeze(data(:,:,EOG_CHAN))';
+                data_signal = reshape(data_signal,numel(data_signal),1);
+                [eog_feats, features_struct_30s,eog_data_signal,features_struct] = FeatExtract_EOG_mini(data_signal, fs,epoch_time,feature_time);
+                Sleep_Struct.(subject).EOG = features_struct_30s;
+                EOGSnamesSubjects = fieldnames(features_struct_30s)';
+                Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EOGSnamesSubjects)) = EOGSnamesSubjects;
+                
+            case {'EMG'}
+                EMG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));
+                % Extracting EMG features
+                data_signal = squeeze(data(:,:,EMG_CHAN))';
+                data_signal = reshape(data_signal,numel(data_signal),1);
+                [emg_feats, features_struct_30s, emg_data_signal,features_struct] = FeatExtract_EMG_mini(data_signal, fs,epoch_time, hyp);
+                Sleep_Struct.(subject).EMG = features_struct_30s;
+                EMGSnamesSubjects = fieldnames(features_struct_30s)';
+                Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EMGSnamesSubjects)) = EMGSnamesSubjects;
+                
+            case {'EEG-EOG'}
+                %     Extracting EEG/EOG features
+                feature_time = 10;
+                [eeg_eog_feats, features_struct_30s,features_struct] = FeatExtract_EEGEOG_mini(eeg_data_signal,eog_data_signal,fs,epoch_time,feature_time);
+                Sleep_Struct.(subject).EEGEOG = features_struct_30s;
+                EEGEOGSnamesSubjects = fieldnames(features_struct_30s)';
+                Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EEGEOGSnamesSubjects)) = EEGEOGSnamesSubjects;
+                
+            otherwise
+                warning(['Signal ' char(signals_for_processing(j)) ' not found!']);
+        end
+        
+        %% labels
+        
+        %     save(['features_' fls{f}],'Sleep')
     end
     % Add hours from start [c = hyp(:,2) c(1) = hyp(1,2)]
     time_from_start = (hyp(:,2)-hyp(1,2))./3600;
     time_from_end = flipud((hyp(:,2)-hyp(1,2))./3600);
-    Sleep_Struct.(subject).HoursRec = time_from_start;    
-    Sleep_Struct.(subject).HoursFromEnd = time_from_end;    
-
+    Sleep_Struct.(subject).HoursRec = time_from_start;
+    Sleep_Struct.(subject).HoursFromEnd = time_from_end;
     
-    Sleep_Struct.(subject).Hypnogram = hyp;    
-
+    
+    Sleep_Struct.(subject).Hypnogram = hyp;
+    
     Sleep_names(length(Sleep_names)+1) = {'HoursRec'};
-    Sleep_names(length(Sleep_names)+1) = {'HoursFromEnd'};    
+    Sleep_names(length(Sleep_names)+1) = {'HoursFromEnd'};
     
     % Combining features into one patient table
     Ttmp = [eeg_feats,eog_feats];
@@ -237,7 +237,7 @@ for f=1:length(fls)
     clear data epoch labels patinfo Ttmp Ttmp2 emg_feats eeg_feats eog_feats eeg_eog_feats feattab
     
     
-
+    
 end
 
 end

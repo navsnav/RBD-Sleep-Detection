@@ -81,32 +81,30 @@ dataHP = filtfilt(HPfilter.Numerator,1,dataLP);
 dataNotchHPLP = filter(Notchfilter, dataHP);
 dataNotchHPLP = filter(Notchfilter2, dataNotchHPLP);
 
-
 %% Substitute PreFiltered Signal with original
 EMG = dataNotchHPLP;
 fs_emg = fs_prefilt;
+
+clear dataHP dataLP dataNotchHPLP 
 
 %%
 
 time_diff = hyp(1,2);
 % derive features that align with hypnogram
-start_align_emg = EMG(time_diff*fs+1:end);
-EMG = start_align_emg;
+EMG = EMG(time_diff*fs+1:end);
 
 %% Remove excess signal from end
 
 time_diff_hyp = hyp(end,2) - hyp(1,2);
 total_samples = (time_diff_hyp*fs)+30*fs;
-end_align_emg = EMG(1:(total_samples));
-EMG = end_align_emg;
-
+EMG = EMG(1:(total_samples));
 
 %% Atonia Index Feature
 
 %Rectify Amplitude
 EMG_rect = abs(EMG);
 
-%Calculate Mean amplitude over 1second for EMG signal between with hypnogram annotations
+%Calculate Mean amplitude over 1second fEMG_nor EMG signal between with hypnogram annotations
 EMG_avg_amp = zeros(length(EMG_rect)/fs_emg,1);
 for r=1:length(EMG_avg_amp)
     EMG_avg_amp(r) = mean(EMG_rect((r-1)*fs_emg+1:(r-1)*fs_emg+fs_emg));
@@ -155,6 +153,8 @@ num_epochs_30s = size(EMG_signal_epoched,2);
 
 K = mini_epoch_s*fs_avg;
 signal_epoched = buffer(EMG_avg_amp_corr_micro(1:30*num_epochs_30s*fs_avg), K); % signal segments with length K
+
+clear EMG_rect EMG_avg_amp_corr EMG_avg_amp_corr_micro
 
 AI = zeros(num_epochs_30s,1);
 for i = 1:num_epochs_30s
@@ -223,15 +223,13 @@ for i = 1:num_epochs_30s
 end % end of main function
 
 %% MAI (Frandsen et al.)
+clear data_signal1
 
-AC_Act = buffer(EMG_n,51,50)';
-
-AC_Act_Min = min(AC_Act,[],2);
-AC_Act_Max = max(AC_Act,[],2);
+AC_Act = buffer(EMG_n,51,50);
+AC_Act_Min = min(AC_Act,[],1);
+AC_Act_Max = max(AC_Act,[],1);
 AC_Act_Delta = AC_Act_Max - AC_Act_Min;
-
 AC_Act_Delta_30s = buffer(AC_Act_Delta,fs_emg*epoch_time)';
-
 AC_Act_Med = median(AC_Act_Delta_30s,2);
 
 EMG_Baseline =  buffer(AC_Act_Med,121,120,100+zeros(120,1));
