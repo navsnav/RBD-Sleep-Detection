@@ -70,7 +70,7 @@ All_Sleep_T = table;
 fls = dir([dbpath '*.mat']);
 fls = arrayfun(@(x) x.name,fls,'UniformOutput',false);
 
-for f=1:length(fls)
+for f=6:length(fls)
     % Loading recording
     load([dbpath fls{f}]);
     disp(['Extracting Features From: ',fls{f}]);
@@ -169,7 +169,7 @@ for f=1:length(fls)
                 EEG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));
                 data_signal = squeeze(data(:,:,EEG_CHAN))';
                 data_signal = reshape(data_signal,numel(data_signal),1);
-                % Extracting EEG features
+                disp("Extracting EEG features")
                 [eeg_feats, features_struct_30s,eeg_data_signal,features_struct] = FeatExtract_EEG_mini(data_signal, fs,epoch_time,feature_time);
                 Sleep_Struct.(subject).EEG = features_struct_30s;
                 EEGSnamesSubjects = fieldnames(features_struct_30s)';
@@ -177,7 +177,7 @@ for f=1:length(fls)
                 
             case {'EOG'}
                 EOG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));
-                % Extracting EOG features
+                disp("Extracting EOG features")
                 feature_time = 10;
                 data_signal = squeeze(data(:,:,EOG_CHAN))';
                 data_signal = reshape(data_signal,numel(data_signal),1);
@@ -188,7 +188,7 @@ for f=1:length(fls)
                 
             case {'EMG'}
                 EMG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));
-                % Extracting EMG features
+                disp("Extracting EMG features")
                 data_signal = squeeze(data(:,:,EMG_CHAN))';
                 data_signal = reshape(data_signal,numel(data_signal),1);
                 [emg_feats, features_struct_30s, emg_data_signal,features_struct] = FeatExtract_EMG_mini(data_signal, fs,epoch_time, hyp);
@@ -197,7 +197,7 @@ for f=1:length(fls)
                 Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EMGSnamesSubjects)) = EMGSnamesSubjects;
                 
             case {'EEG-EOG'}
-                %     Extracting EEG/EOG features
+                disp("Extracting EEG/EOG features")
                 feature_time = 10;
                 [eeg_eog_feats, features_struct_30s,features_struct] = FeatExtract_EEGEOG_mini(eeg_data_signal,eog_data_signal,fs,epoch_time,feature_time);
                 Sleep_Struct.(subject).EEGEOG = features_struct_30s;

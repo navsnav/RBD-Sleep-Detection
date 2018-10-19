@@ -121,7 +121,7 @@ window = 60;
 EMG_mov_min = movmin(EMG_avg_amp,window);
 %% Substract Moving Minimum
 
-EMG_avg_amp_corr = EMG_avg_amp - EMG_mov_min';
+EMG_avg_amp_corr = EMG_avg_amp - EMG_mov_min;
 
 %% Determine if EMG signal is in micro and milli volts
 if max(EMG_avg_amp_corr) > 10
