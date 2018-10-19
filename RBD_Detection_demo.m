@@ -48,7 +48,7 @@ cd(main_dir);
 signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
 disp(['Extracting Features:',signals_for_processing]);
 % Generate Features
-[~, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
+[Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
 
 feature_folder = [data_folder, 'features', slashchar];
 % Create a destination directory if it doesn't exist
