@@ -134,8 +134,8 @@ for out=1:folds
        
     EMG_Table = Calculate_EMG_Values_table(Xtrn);
     % Preprocess Data
-    [EMG_Table_Pre] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
-
+%     [EMG_Table_Pre] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
+    EMG_Table_Pre = EMG_Table;
     % Training Set for RBD Detection
     EMG_Ytrn = table2array(EMG_Table_Pre(:,2));
     
@@ -159,7 +159,7 @@ for out=1:folds
     % Matlab Trees
     [Yhat,votes] = Predict_SleepStaging_RF(rf,Xtst);
     
- %% Test RBD Detection using Annoated Sleep Staging
+ %% Test RBD Detection using Annotated Sleep Staging
     
     % Generate Test values based on annoated Sleep Staging
     EMG_Annotated_Test_Table = Calculate_EMG_Values_table(Sleep_table_Pre(PatientTest_idx,:));    
@@ -259,9 +259,9 @@ if (view_results)
    print_rbd_detection_results(results_f_est_auto,results_f_new_auto,rbd_detect_name1,rbd_detect_name2,tablename,print_figures,print_folder); 
    %Compare RBD Detection (annotated)
    label_name = 'Annotated';
-   compare_rbd_detection_results(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results2(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
    label_name = 'Automated';
-   compare_rbd_detection_results(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Table_Names,EMG_feats,rbd_group,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results2(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,rbd_group,EMG_Auto_Yhat_Results,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
 end
 
 
