@@ -1,4 +1,4 @@
-function compare_rbd_detection_results4(EMG_Metric,RBD_Yhat,label_name,print_figures,print_folder,display_flag)
+function compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figures,print_folder,display_flag)
 % This function generates the performance of RBD detection using 
 % established techniques and new ones
 %
