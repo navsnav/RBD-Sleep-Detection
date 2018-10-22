@@ -84,17 +84,20 @@ importance_Results_REM = [];
 
 Yhat_Results = zeros(size(Sleep,1),1);
 votes_Results = zeros(size(Sleep,1),5);
-EMG_Metric = zeros(size(rbd_group,1),length(EMG_feats));
+% EMG_Metric = zeros(size(rbd_group,1),length(EMG_feats));
+EMG_Metric = table;
 EMG_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_votes_Results = zeros(size(rbd_group,1),2);
 EMG_est_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_est_votes_Results = zeros(size(rbd_group,1),2);
-EMG_Auto_Metric = zeros(size(rbd_group,1),length(EMG_feats));
+%EMG_Auto_Metric = zeros(size(rbd_group,1),length(EMG_feats));
+EMG_Auto_Metric = table;
 EMG_Auto_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_Auto_votes_Results = zeros(size(rbd_group,1),2);
 EMG_Auto_est_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_Auto_est_votes_Results = zeros(size(rbd_group,1),2);
-
+RBD_Yhat= table;
+RBD_Auto_Yhat = table;
 results_f_est = zeros(folds,6);
 results_f_new = zeros(folds,6);   
 results_f_est_auto = zeros(folds,6);
@@ -169,11 +172,11 @@ for out=1:folds
     
     %Predict using all emg features for annotated Sleep Staging
 %     [EMG_Yhat EMG_votes EMG_predict_val] = classRF_predict(EMG_Xtst,emg_rf,extra_options);
-    [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst);    
+    [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst,'New_Features');    
     
     %Predict using all established emg features for annotated Sleep Staging
 %     [EMG_est_Yhat EMG_est_votes EMG_est_predict_val] = classRF_predict(EMG_est_Xtst,emg_est_rf,extra_options);    
-    [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_est_Xtst);    
+    [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_est_Xtst,'Established_Metrics');    
 
  %% Test RBD Detection using Automatic Sleep Staging
     
@@ -190,11 +193,11 @@ for out=1:folds
     % Train RF for RBD Detection using Automatic Sleep Staging
     %Predict using all emg featres for automatically annoated Sleep Staging
 %     [EMG_Auto_Yhat EMG_Auto_votes EMG_Auto_predict_val] = classRF_predict(EMG_Auto_Xtst,emg_rf,extra_options);
-    [EMG_Auto_Yhat,EMG_Auto_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Auto_Xtst);    
+    [EMG_Auto_Yhat,EMG_Auto_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Auto_Xtst,'New_Features');    
     
     %Predict using all established emg featres for automatically annoated Sleep Staging
 %     [EMG_Auto_est_Yhat EMG_Auto_est_votes EMG_Auto_est_predict_val] = classRF_predict(EMG_Auto_est_Xtst,emg_est_rf,extra_options);   
-    [EMG_Auto_est_Yhat,EMG_Auto_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_Auto_est_Xtst);    
+    [EMG_Auto_est_Yhat,EMG_Auto_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_Auto_est_Xtst,'Established_Metrics');    
 
     %% Store Results  
     % Automated Sleep Staging
@@ -202,32 +205,36 @@ for out=1:folds
     votes_Results(PatientTest_idx,:) = votes;
     importance_Results(:,:,out) = [rf_importance];            
     % RBD Detection using Annoated Sleep Staging
-    EMG_Yhat_Results(PatientTest) = EMG_Yhat;    
+    EMG_Yhat_Results(PatientTest) = table2array(EMG_Yhat);    
     EMG_votes_Results(PatientTest,:) = EMG_votes;    
-    EMG_est_Yhat_Results(PatientTest) = EMG_est_Yhat;    
+    EMG_est_Yhat_Results(PatientTest) = table2array(EMG_est_Yhat);    
     EMG_est_votes_Results(PatientTest,:) = EMG_est_votes;     
-    EMG_Metric(PatientTest,:) = EMG_Xtst;        
+    EMG_Metric = [EMG_Metric;EMG_Annotated_Test_Table];
+
     EMG_importance_Results(:,:,out) = [emg_rf_importance];        
     EMG_est_importance_Results(:,:,out) = [emg_est_rf_importance];     
     % RBD Detection using Automatic Sleep Staging
-    EMG_Auto_Yhat_Results(PatientTest) = EMG_Auto_Yhat;    
+    EMG_Auto_Yhat_Results(PatientTest) = table2array(EMG_Auto_Yhat);    
     EMG_Auto_votes_Results(PatientTest,:) = EMG_Auto_votes;    
-    EMG_Auto_est_Yhat_Results(PatientTest) = EMG_Auto_est_Yhat;    
+    EMG_Auto_est_Yhat_Results(PatientTest) = table2array(EMG_Auto_est_Yhat);    
     EMG_Auto_est_votes_Results(PatientTest,:) = EMG_Auto_est_votes;               
-    EMG_Auto_Metric(PatientTest,:) = EMG_Auto_Xtst;
+    EMG_Auto_Metric = [EMG_Auto_Metric;EMG_Auto_Test_Table];
+    
+    RBD_Yhat = [RBD_Yhat;[EMG_Yhat,EMG_est_Yhat]];
+    RBD_Auto_Yhat = [RBD_Auto_Yhat ;[EMG_Auto_Yhat,EMG_Auto_est_Yhat]];
     
 %% RBD Detection Results
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_est_Yhat==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_est_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_est(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Yhat==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_new(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_est_Yhat==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_Auto_est_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_est_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];    
  
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_Yhat==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_Auto_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_new_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];   
     
 end
@@ -259,9 +266,9 @@ if (view_results)
    print_rbd_detection_results(results_f_est_auto,results_f_new_auto,rbd_detect_name1,rbd_detect_name2,tablename,print_figures,print_folder); 
    %Compare RBD Detection (annotated)
    label_name = 'Annotated';
-   compare_rbd_detection_results2(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figures,print_folder,display_flag);
    label_name = 'Automated';
-   compare_rbd_detection_results2(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,rbd_group,EMG_Auto_Yhat_Results,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results(EMG_Auto_Metric,RBD_Auto_Yhat,label_name,print_figures,print_folder,display_flag);
 end
 
 
@@ -276,7 +283,7 @@ end
 
 %% Print Annotated Vs Automatic RBD Metrics
 if (view_results)
-    print_annotated_vs_auto(EMG_Table_Names,EMG_feats,rbd_group,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
+    print_annotated_vs_auto(EMG_Table_Names,EMG_feats,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
 end
 
 %% Print Confusion Matrices/Hypnograms
