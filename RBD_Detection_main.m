@@ -25,63 +25,63 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 % prepare_capslpdb(data_folder,outputfolder);
 
 %% (B) Download PSG Signals  - Use this section to download example edf files and annotations as a test
-cd('../');
-outputfolder = [pwd,'\data'];
-cd(current_dir);
-% The following data will be downloaded from the CAPS database from
-% physionet
-list_of_files = {
-    'n1';
-    'n2';
-    'n3';
-    'n10';
-    'n5'
-    'rbd1';
-    'rbd2';
-    'rbd3';
-    'rbd4';
-    'rbd5'};
-
-download_CAP_EDF_Annotations(outputfolder,list_of_files);
-%Prepare mat files with PSG signals and annotations
-prepare_capslpdb(outputfolder,outputfolder);
+% cd('../');
+% outputfolder = [pwd,'\data'];
+% cd(current_dir);
+% % The following data will be downloaded from the CAPS database from
+% % physionet
+% list_of_files = {
+%     'n1';
+%     'n2';
+%     'n3';
+%     'n10';
+%     'n5'
+%     'rbd1';
+%     'rbd2';
+%     'rbd3';
+%     'rbd4';
+%     'rbd5'};
+% 
+% download_CAP_EDF_Annotations(outputfolder,list_of_files);
+% %Prepare mat files with PSG signals and annotations
+% prepare_capslpdb(outputfolder,outputfolder);
 
 %% (C) Extract PSG Signals - Use this section if you have a dataset of mat files with hypnogram datasets
-cd('../');
-data_folder = [pwd,'\data'];
-cd(current_dir);
-signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
-disp(['Extracting Features:',signals_for_processing]);
-% Generate Features
-[Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
-
-cd('../');
-output_folder = [pwd,'\data\features'];
-% Create a destination directory if it doesn't exist
-if exist(output_folder, 'dir') ~= 7
-    fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
-    mkdir(output_folder);
-end
-cd(output_folder);
-save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
-disp('Feature Extraction Complete and Saved');
-cd(current_dir);
+% cd('../');
+% data_folder = [pwd,'\data'];
+% cd(current_dir);
+% signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
+% disp(['Extracting Features:',signals_for_processing]);
+% % Generate Features
+% [Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
+% 
+% cd('../');
+% output_folder = [pwd,'\data\features'];
+% % Create a destination directory if it doesn't exist
+% if exist(output_folder, 'dir') ~= 7
+%     fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
+%     mkdir(output_folder);
+% end
+% cd(output_folder);
+% save('Features.mat','Sleep','Sleep_Struct','Sleep_table');
+% disp('Feature Extraction Complete and Saved');
+% cd(current_dir);
 
 %% (D) Load Features matrix saved from ExtractFeatures
-% current_dir = pwd;
-% data_folder = 'C:\Users\scro2778\Documents\GitHub\data\features';
-% cd(data_folder);
-% filename = 'Features.mat';
-% load(filename);
-% cd(current_dir);
+current_dir = pwd;
+data_folder = 'C:\Users\scro2778\Documents\GitHub\RBD-Sleep-Detection\data\features';
+cd(data_folder);
+filename = 'Features_With_ECG.mat';
+load(filename);
+cd(current_dir);
 %% Balance RBD & HC Cohort if needed
 
-% [patients,ia,ic] = unique(Sleep_table.SubjectIndex);
-% remove_idx = ismember(Sleep_table.SubjectIndex,patients(1:5));
-% Sleep_table(remove_idx,:) = [];
+[patients,ia,ic] = unique(Sleep_table.SubjectIndex);
+remove_idx = ismember(Sleep_table.SubjectIndex,patients(1:5));
+Sleep_table(remove_idx,:) = [];
 
 %% Parameters for generating results
-outfilename = 'RBD_Detection_Results'; %Filename/Folder to be created
+outfilename = 'RBD_Detection_Results_50trees_ECG_21_10_2018'; %Filename/Folder to be created
 view_results = 1; %Produce Graphs/figures
 print_figures= 1; %Save Graphs/figures
 print_folder = strcat(data_folder,'\Graphs_',outfilename);
@@ -89,7 +89,11 @@ display_flag = 1; %Diplay results on command window
 save_data = 1; %Save Data
 
 %% Preprocess Data 
-SS_Features =[11:144]; % Features used for sleep staging
+SS_Features = [11:144]; % Features used for sleep staging
+% ECG_feats = [3,7,8,9,10,11,15,17,32,33,36,39,40,43]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
+% ECG_feats = [3,7,8,9,10,11,15,17,32,33,34:43]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
+ECG_feats = [3,7,8,9,10,11,15,17,32,33,34:121]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
+
 EMG_feats = [3,7,8,9,10,11,15,17,32,33]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3)
 EMG_est_feats = [3,7,8,9]; %AI, MAD_Dur, MAD_Per, Stream
 
@@ -113,7 +117,7 @@ indices = crossvalind('Kfold',rbd_group, folds);
 % Apply cross fold validation for automated sleep staging followed by RBD
 % detection using established metrics and new metrics
 disp(['Initiating ',num2str(folds),' fold cross validation with ',num2str(n_trees),' trees.']);
-[Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag);
+[Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection2(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,ECG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag);
 
 
 
