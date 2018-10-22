@@ -1,4 +1,4 @@
-function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Auto_est_Yhat_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag)
+function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Auto_est_Yhat_Results,All_Confusion] = RBD_Detection2(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,ECG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag)
   % Copyright (c) 2018, Navin Cooray (University of Oxford)
   % All rights reserved.
   %
@@ -84,12 +84,16 @@ importance_Results_REM = [];
 
 Yhat_Results = zeros(size(Sleep,1),1);
 votes_Results = zeros(size(Sleep,1),5);
-EMG_Metric = zeros(size(rbd_group,1),length(EMG_feats));
+EMG_Metric = zeros(size(rbd_group,1),length(ECG_feats));
+ECG_Yhat_Results = ones(size(rbd_group,1),1)*-1;
+ECG_votes_Results = zeros(size(rbd_group,1),2);
 EMG_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_votes_Results = zeros(size(rbd_group,1),2);
 EMG_est_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_est_votes_Results = zeros(size(rbd_group,1),2);
-EMG_Auto_Metric = zeros(size(rbd_group,1),length(EMG_feats));
+EMG_Auto_Metric = zeros(size(rbd_group,1),length(ECG_feats));
+ECG_Auto_Yhat_Results = ones(size(rbd_group,1),1)*-1;
+ECG_Auto_votes_Results = zeros(size(rbd_group,1),2);
 EMG_Auto_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_Auto_votes_Results = zeros(size(rbd_group,1),2);
 EMG_Auto_est_Yhat_Results = ones(size(rbd_group,1),1)*-1;
@@ -132,7 +136,7 @@ for out=1:folds
 
     %% Train RBD Detection RF from annotated sleep stages (training set)
        
-    EMG_Table = Calculate_EMG_Values_table(Xtrn);
+    EMG_Table = Calculate_RBD_Values_table(Xtrn);
     % Preprocess Data
 %     [EMG_Table_Pre] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
     EMG_Table_Pre = EMG_Table;
@@ -150,7 +154,8 @@ for out=1:folds
     [emg_est_rf,emg_est_rf_importance] = Train_RBDDetection_RF(n_trees,EMG_Table,EMG_est_feats,EMG_Ytrn);
     %Train New Feats RF
     [emg_rf,emg_rf_importance] = Train_RBDDetection_RF(n_trees,EMG_Table,EMG_feats,EMG_Ytrn);
-    
+    %Train New ECG Feats RF
+    [ecg_rf,ecg_rf_importance] = Train_RBDDetection_RF(n_trees,EMG_Table,ECG_feats,EMG_Ytrn);    
     
  %% Test Sleep Staging 
     
@@ -162,7 +167,8 @@ for out=1:folds
  %% Test RBD Detection using Annotated Sleep Staging
     
     % Generate Test values based on annoated Sleep Staging
-    EMG_Annotated_Test_Table = Calculate_EMG_Values_table(Sleep_table_Pre(PatientTest_idx,:));    
+    EMG_Annotated_Test_Table = Calculate_RBD_Values_table(Sleep_table_Pre(PatientTest_idx,:));    
+    ECG_Xtst=table2array(EMG_Annotated_Test_Table(:,ECG_feats));    
     EMG_Xtst=table2array(EMG_Annotated_Test_Table(:,EMG_feats));    
     EMG_est_Xtst=table2array(EMG_Annotated_Test_Table(:,EMG_est_feats));    
     EMG_Ytst = table2array(EMG_Annotated_Test_Table(:,2));
@@ -175,14 +181,18 @@ for out=1:folds
 %     [EMG_est_Yhat EMG_est_votes EMG_est_predict_val] = classRF_predict(EMG_est_Xtst,emg_est_rf,extra_options);    
     [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_est_Xtst);    
 
+    %Predict using all rbd features (incl. ecg) for annotated Sleep Staging
+    [ECG_Yhat,ECG_votes] = Predict_RBDDetection_RF(ecg_rf,ECG_Xtst);       
+    
  %% Test RBD Detection using Automatic Sleep Staging
     
     Sleep_table_automatic = Sleep_table_Pre(PatientTest_idx,:);
     Sleep_table_automatic.AnnotatedSleepStage = Yhat; %Automatic sleep staging
     
     % Generate Test values based on automatic classified Sleep Staging
-    EMG_Auto_Test_Table = Calculate_EMG_Values_table(Sleep_table_automatic);
-
+    EMG_Auto_Test_Table = Calculate_RBD_Values_table(Sleep_table_automatic);
+    
+    ECG_Auto_Xtst=table2array(EMG_Auto_Test_Table(:,ECG_feats));    
     EMG_Auto_Xtst=table2array(EMG_Auto_Test_Table(:,EMG_feats));    
     EMG_Auto_est_Xtst=table2array(EMG_Auto_Test_Table(:,EMG_est_feats));    
     EMG_Auto_Ytst = table2array(EMG_Auto_Test_Table(:,2));
@@ -195,26 +205,35 @@ for out=1:folds
     %Predict using all established emg featres for automatically annoated Sleep Staging
 %     [EMG_Auto_est_Yhat EMG_Auto_est_votes EMG_Auto_est_predict_val] = classRF_predict(EMG_Auto_est_Xtst,emg_est_rf,extra_options);   
     [EMG_Auto_est_Yhat,EMG_Auto_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_Auto_est_Xtst);    
-
+    % Train RF for RBD Detection using Automatic Sleep Staging
+    
+    %Predict using all ecg featres for automatically annoated Sleep Staging
+    [ECG_Auto_Yhat,ECG_Auto_votes] = Predict_RBDDetection_RF(ecg_rf,ECG_Auto_Xtst);    
+   
     %% Store Results  
     % Automated Sleep Staging
     Yhat_Results(PatientTest_idx) =  Yhat;
     votes_Results(PatientTest_idx,:) = votes;
     importance_Results(:,:,out) = [rf_importance];            
     % RBD Detection using Annoated Sleep Staging
+    ECG_Yhat_Results(PatientTest) = ECG_Yhat;    
+    ECG_votes_Results(PatientTest,:) = ECG_votes;   
     EMG_Yhat_Results(PatientTest) = EMG_Yhat;    
     EMG_votes_Results(PatientTest,:) = EMG_votes;    
     EMG_est_Yhat_Results(PatientTest) = EMG_est_Yhat;    
     EMG_est_votes_Results(PatientTest,:) = EMG_est_votes;     
-    EMG_Metric(PatientTest,:) = EMG_Xtst;        
+    EMG_Metric(PatientTest,:) = ECG_Xtst;        
+    ECG_importance_Results(:,:,out) = [ecg_rf_importance];        
     EMG_importance_Results(:,:,out) = [emg_rf_importance];        
     EMG_est_importance_Results(:,:,out) = [emg_est_rf_importance];     
     % RBD Detection using Automatic Sleep Staging
+    ECG_Auto_Yhat_Results(PatientTest) = ECG_Auto_Yhat;    
+    ECG_Auto_votes_Results(PatientTest,:) = ECG_Auto_votes;    
     EMG_Auto_Yhat_Results(PatientTest) = EMG_Auto_Yhat;    
     EMG_Auto_votes_Results(PatientTest,:) = EMG_Auto_votes;    
     EMG_Auto_est_Yhat_Results(PatientTest) = EMG_Auto_est_Yhat;    
     EMG_Auto_est_votes_Results(PatientTest,:) = EMG_Auto_est_votes;               
-    EMG_Auto_Metric(PatientTest,:) = EMG_Auto_Xtst;
+    EMG_Auto_Metric(PatientTest,:) = ECG_Auto_Xtst;
     
 %% RBD Detection Results
     
@@ -223,13 +242,18 @@ for out=1:folds
     
     [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Yhat==1, rbd_group(PatientTest)==1);
     results_f_new(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
+ 
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(ECG_Yhat==1, rbd_group(PatientTest)==1);
+    results_f_ecg(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];    
     
     [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_est_Yhat==1, rbd_group(PatientTest)==1);
     results_f_est_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];    
  
     [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_Yhat==1, rbd_group(PatientTest)==1);
     results_f_new_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];   
-    
+
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(ECG_Auto_Yhat==1, rbd_group(PatientTest)==1);
+    results_f_ecg_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];       
 end
 
 %% Save Data
@@ -250,33 +274,35 @@ if (view_results)
    %Print Comparison of RBD Detection (Annotated)
    rbd_detect_name1 = 'Established Metrics (Annotated)';
    rbd_detect_name2 = 'New Features (Annotated)';
+   rbd_detect_name3 = 'New ECG Features (Annotated)';
    tablename = 'Summary_RBD_Detection_Annotated';  
-   print_rbd_detection_results(results_f_est,results_f_new,rbd_detect_name1,rbd_detect_name2,tablename,print_figures,print_folder); 
+   print_rbd_detection_results2(results_f_est,results_f_new,results_f_ecg,rbd_detect_name1,rbd_detect_name2,rbd_detect_name3,tablename,print_figures,print_folder); 
    %Print Comparison of RBD Detection (Automated)
    rbd_detect_name1 = 'Established Metrics (Automated)';
    rbd_detect_name2 = 'New Features (Automated)';
+   rbd_detect_name3 = 'New ECG Features (Automated)';
    tablename = 'Summary_RBD_Detection_Automated';  
-   print_rbd_detection_results(results_f_est_auto,results_f_new_auto,rbd_detect_name1,rbd_detect_name2,tablename,print_figures,print_folder); 
+   print_rbd_detection_results2(results_f_est_auto,results_f_new_auto,results_f_ecg_auto,rbd_detect_name1,rbd_detect_name2,rbd_detect_name3,tablename,print_figures,print_folder); 
    %Compare RBD Detection (annotated)
    label_name = 'Annotated';
-   compare_rbd_detection_results2(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results3(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,ECG_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
    label_name = 'Automated';
-   compare_rbd_detection_results2(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,rbd_group,EMG_Auto_Yhat_Results,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results3(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,ECG_Auto_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
 end
 
 
 %% Print Feature Importance Results
 if (view_results)
    %RBD Importance (Gini)
-    order_idx = size(EMG_importance_Results,2); %Mean Decrease in Gini 
+    order_idx = size(ECG_importance_Results,2); %Mean Decrease in Gini 
     titlename = 'Feature Importance - Mean Decrease in Gini Index';
     xname = 'Mean Decrease in Gini Index (Importance)';
-    print_feature_importance(EMG_importance_Results,order_idx,EMG_Table_Names,EMG_feats,titlename,xname,print_figures,print_folder);       
+    print_feature_importance(ECG_importance_Results,order_idx,EMG_Table_Names,ECG_feats,titlename,xname,print_figures,print_folder);       
 end
 
 %% Print Annotated Vs Automatic RBD Metrics
 if (view_results)
-    print_annotated_vs_auto(EMG_Table_Names,EMG_feats,rbd_group,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
+    print_annotated_vs_auto(EMG_Table_Names,ECG_feats,rbd_group,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
 end
 
 %% Print Confusion Matrices/Hypnograms

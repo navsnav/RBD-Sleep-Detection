@@ -48,7 +48,7 @@ cd(main_dir);
 signals_for_processing = {'EEG','EOG','EMG','EEG-EOG'};
 disp(['Extracting Features:',signals_for_processing]);
 % Generate Features
-[~, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
+[Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
 
 feature_folder = [data_folder, 'features', slashchar];
 % Create a destination directory if it doesn't exist
@@ -56,7 +56,7 @@ if exist(feature_folder, 'dir') ~= 7
     fprintf('WARNING: Features directory does not exist. Creating new directory ...\n\n');
     mkdir(feature_folder);
 end
-save([feature_folder, 'Features.mat'],'Sleep','Sleep_Struct','Sleep_table');
+save([feature_folder, 'Features_demo.mat'],'Sleep','Sleep_Struct','Sleep_table');
 disp('Feature Extraction Complete and Saved');
 
 %% (D) Load Features matrix saved from ExtractFeatures
@@ -118,13 +118,13 @@ EMG_feats = find(ismember(EMG_Table.Properties.VariableNames,rbd_new_rf.Predicto
 
 % Preprocess Data
 % [EMG_Table_Est,rmv_idx] = RBD_RF_Preprocess(EMG_Table,[],EMG_est_feats);
-EMG_Table_Est = EMG_Table(:,[2,EMG_est_feats]); 
+EMG_Table_Est = EMG_Table(:,[1,2,EMG_est_feats]); 
 % EMG_Table_Est_Tst = EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
 EMG_Table_Est_Tst = EMG_Table(:,EMG_est_feats); %Remove Subject Index and Diagnosis
 
 
 % [EMG_Table_New] = RBD_RF_Preprocess(EMG_Table,[],EMG_feats);
-EMG_Table_New = EMG_Table(:,[2,EMG_feats]);
+EMG_Table_New = EMG_Table(:,[1,2,EMG_feats]);
 % EMG_Table_New_Tst = EMG_Table_New(:,3:end);%Remove Subject Index and Diagnosis
 EMG_Table_New_Tst  = EMG_Table(:,EMG_feats); %Remove Subject Index and Diagnosis
 % Matlab Trees
@@ -144,12 +144,12 @@ Auto_EMG_feats = find(ismember(Auto_EMG_Table.Properties.VariableNames,rbd_new_r
 
 % Preprocess Data
 % [Auto_EMG_Table_Est] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_est_feats);
-Auto_EMG_Table_Est = Auto_EMG_Table(:,[2,EMG_est_feats]);
+Auto_EMG_Table_Est = Auto_EMG_Table(:,[1,2,EMG_est_feats]);
 % Auto_EMG_Table_Est_Tst = Auto_EMG_Table_Est(:,3:end); %Remove Subject Index and Diagnosis
 Auto_EMG_Table_Est_Tst = Auto_EMG_Table(:,EMG_est_feats);
 
 % [Auto_EMG_Table_New] = RBD_RF_Preprocess(Auto_EMG_Table,[],EMG_feats);
-Auto_EMG_Table_New = Auto_EMG_Table(:,[2,EMG_feats]);
+Auto_EMG_Table_New = Auto_EMG_Table(:,[1,2,EMG_feats]);
 % Auto_EMG_Table_New_Tst = Auto_EMG_Table_New(:,3:end); %Remove Subject Index and Diagnosis
 Auto_EMG_Table_New_Tst = Auto_EMG_Table(:,EMG_feats);
 %Matlab Trees
@@ -162,9 +162,9 @@ Auto_EMG_Table_New_Tst = Auto_EMG_Table(:,EMG_feats);
 if (view_results)
     %Compare RBD Detection (annotated)
     label_name = 'Annotated';
-    compare_rbd_detection_results(table2array(EMG_Table),EMG_Table_Est,EMG_Table_New,EMG_est_Yhat,EMG_new_Yhat,EMG_Table.Properties.VariableNames,EMG_feats,label_name,print_figures,print_folder,display_flag);
+    compare_rbd_detection_results(EMG_Table,EMG_Table_Est,EMG_Table_New,EMG_est_Yhat,EMG_new_Yhat,label_name,print_figures,print_folder,display_flag);
     label_name = 'Automated';
-    compare_rbd_detection_results(table2array(Auto_EMG_Table),Auto_EMG_Table_Est,Auto_EMG_Table_New,Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,Auto_EMG_Table.Properties.VariableNames,EMG_feats,label_name,print_figures,print_folder,display_flag);
+    compare_rbd_detection_results(Auto_EMG_Table,Auto_EMG_Table_Est,Auto_EMG_Table_New,Auto_EMG_est_Yhat,Auto_EMG_new_Yhat,label_name,print_figures,print_folder,display_flag);
 end
 
 
