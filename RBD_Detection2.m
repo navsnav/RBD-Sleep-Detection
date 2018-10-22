@@ -302,7 +302,7 @@ end
 
 %% Print Annotated Vs Automatic RBD Metrics
 if (view_results)
-    print_annotated_vs_auto(EMG_Table_Names,ECG_feats,rbd_group,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
+    print_annotated_vs_auto(EMG_Table_Names,ECG_feats,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
 end
 
 %% Print Confusion Matrices/Hypnograms

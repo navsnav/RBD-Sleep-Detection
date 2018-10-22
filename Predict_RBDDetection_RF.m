@@ -1,11 +1,12 @@
-function [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst)
+function [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst,label)
 % This function makes omelettes
 %
 % Input:
 %       rf: Trained Random Forest Model from TreeBagger.
 %       Xtst: Test set using same features used for training rf model.
+%       label: Variable name for EMG_Yhat output
 % Output:
-%       Yhat: Results of sleep staging from trained rf model.   
+%       Yhat: Results of sleep staging from trained rf model (table format).   
 %       votes: Percentage of votes for each stage.
 % --
 % RBD Sleep Detection Toolbox, version 1.0, November 2018
@@ -38,6 +39,6 @@ function [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst)
 
 
     [EMG_Yhat,EMG_votes] = predict(emg_rf,EMG_Xtst);       
-    EMG_Yhat = str2num(cell2mat(EMG_Yhat));
+    EMG_Yhat = array2table(str2num(cell2mat(EMG_Yhat)),'VariableNames',{label});
 
 end
