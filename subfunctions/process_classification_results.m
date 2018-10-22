@@ -1,4 +1,4 @@
-function [acc, sensi, speci, prec, recall, f1, ppv] = process_classification_results2(Yhat, Ytst)
+function [acc, sensi, speci, prec, recall, f1, ppv] = process_classification_results(Yhat, Ytst)
 % This function produces performance results (accuracy, sensitivty, 
 % specificity, precision, recall, F1 score, positive-predicitive-value)
 %

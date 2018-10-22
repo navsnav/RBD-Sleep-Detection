@@ -50,7 +50,7 @@ for i=1:length(num_subjects)
 
     sub_idx = ismember(Sleep(:,1),num_subjects(i)); 
 
-    [acc(i), sensi(i), speci(i), prec(i), recall(i), f1(i)] = process_classification_results2(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5);
+    [acc(i), sensi(i), speci(i), prec(i), recall(i), f1(i)] = process_classification_results(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5);
 
     ConfMat1{i} = confusionmat(Yhat(sub_idx), Sleep(sub_idx,7), 'order', [0 1 2 3 5]);
     ConfMat3{i} = confusionmat(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5, 'order', [0 1]);

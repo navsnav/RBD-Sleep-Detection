@@ -7,7 +7,7 @@ for i=1:length(num_subjects)
     for j=1:length(states)
         
         subject_idx = ismember(Sleep(:,1),num_subjects(i));
-        [acc, sensi, speci, prec, recall, f1] = process_classification_results2(Yhat_Results(subject_idx)==states(j), Sleep(subject_idx,7)==states(j));
+        [acc, sensi, speci, prec, recall, f1] = process_classification_results(Yhat_Results(subject_idx)==states(j), Sleep(subject_idx,7)==states(j));
         Accuracy(j,i) = acc;
         Sensitivity(j,i) = sensi;
         Specificity(j,i) = speci;

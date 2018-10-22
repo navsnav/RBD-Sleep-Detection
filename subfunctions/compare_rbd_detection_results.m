@@ -43,7 +43,7 @@ function compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figu
 rbd_d_anno_data=[];
 cell_names = {}; 
 for i=1:size(RBD_Yhat,2)
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results2(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1);
+[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1);
 ConfMat_RBD_Class_Summary = confusionmat(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
 rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
@@ -54,18 +54,18 @@ end
 cell_names = [['MAD (',label_name,')'],['Stream (',label_name,')'],['Atonia Index (',label_name,')'],cell_names];
 
 %Atonia Index
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results2(EMG_Metric.AI_REM<0.9, [EMG_Metric.RBD==1]);
+[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(EMG_Metric.AI_REM<0.9, [EMG_Metric.RBD==1]);
 ConfMat_RBD_Class_Summary = confusionmat(EMG_Metric.AI_REM<0.9, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
 rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
 %Stream
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results2(EMG_Metric.Stream>30, [EMG_Metric.RBD==1]);
+[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(EMG_Metric.Stream>30, [EMG_Metric.RBD==1]);
 ConfMat_RBD_Class_Summary = confusionmat(EMG_Metric.Stream>30, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
 rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
 
 %Motor Activity
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results2(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, [EMG_Metric.RBD==1]);
+[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, [EMG_Metric.RBD==1]);
 ConfMat_RBD_Class_Summary = confusionmat(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
 rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
