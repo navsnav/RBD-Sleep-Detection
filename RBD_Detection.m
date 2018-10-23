@@ -225,16 +225,16 @@ for out=1:folds
     
 %% RBD Detection Results
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_est_Yhat)==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results(table2array(EMG_est_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_est(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_Yhat)==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results(table2array(EMG_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_new(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
     
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_Auto_est_Yhat)==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results(table2array(EMG_Auto_est_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_est_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];    
  
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(table2array(EMG_Auto_Yhat)==1, rbd_group(PatientTest)==1);
+    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results(table2array(EMG_Auto_Yhat)==1, rbd_group(PatientTest)==1);
     results_f_new_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];   
     
 end

@@ -285,9 +285,9 @@ if (view_results)
    print_rbd_detection_results2(results_f_est_auto,results_f_new_auto,results_f_ecg_auto,rbd_detect_name1,rbd_detect_name2,rbd_detect_name3,tablename,print_figures,print_folder); 
    %Compare RBD Detection (annotated)
    label_name = 'Annotated';
-   compare_rbd_detection_results3(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,ECG_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,ECG_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
    label_name = 'Automated';
-   compare_rbd_detection_results3(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,ECG_Auto_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
+   compare_rbd_detection_results(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,ECG_Auto_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
 end
 
 

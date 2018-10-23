@@ -74,7 +74,7 @@ for i = 1:N
     fs_spin = 100;
     x2 = resample(x, fs_spin, fs);
     
-    [detected_spindles, begins, ends] = spindle_estimation_FHN2015(x2, fs_spin, spindle_frequency_range, alg_used);
+    [~, begins, ~] = spindle_estimation_FHN2015(x2, fs_spin, spindle_frequency_range, alg_used);
     features_struct.EEG_NumSpindles(i,1) = length(begins);
     
 
