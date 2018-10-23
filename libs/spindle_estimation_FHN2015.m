@@ -81,6 +81,7 @@ scales_of_interest = idxSca2:idxSca1;
 [temp1, sortIndex] = sort(Xcoef,'descend');
 
 for jj = 1:size(sortIndex,2)
+    %disp(["jj= " num2str(jj)])
     [C{jj,1} ia{jj,1}, ib{jj,1}] = intersect(sortIndex(1:topK_coef,jj), scales_of_interest);
     features_spindles.topcoefs(1,jj) = length(C{jj}); % how many Xcoef coefficients appear in the topK_coef for the studied time interval
     features_spindles.topcoefs(2,jj) = sum(1./ia{jj}); % give weights depending on the order the Xcoef appear at the top
