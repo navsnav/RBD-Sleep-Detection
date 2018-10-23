@@ -69,9 +69,9 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 
 %% (D) Load Features matrix saved from ExtractFeatures
 current_dir = pwd;
-data_folder = 'C:\Users\scro2778\Documents\GitHub\RBD-Sleep-Detection\data\features';
+data_folder = [main_dir, 'data', slashchar, 'features', slashchar];
 cd(data_folder);
-filename = 'Features_With_ECG.mat';
+filename = 'Features_demo.mat';
 load(filename);
 cd(current_dir);
 %% Balance RBD & HC Cohort if needed
