@@ -53,7 +53,7 @@ for i=1:length(num_subjects)
     metrics = process_classification_results(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5);
     acc = metrics(1);
     sensi = metrics(2);
-    prec = metrics(3);
+    speci = metrics(3);
     
     ConfMat1{i} = confusionmat(Yhat(sub_idx), Sleep(sub_idx,7), 'order', [0 1 2 3 5]);
     ConfMat3{i} = confusionmat(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5, 'order', [0 1]);
