@@ -1,12 +1,12 @@
 function compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figures,print_folder,display_flag)
-% This function generates the performance of RBD detection using 
+% This function generates the performance of RBD detection using
 % established techniques and new ones
 %
 % Inputs:
-%  EMG_Metric  - Table with metrics for each participant 
+%  EMG_Metric  - Table with metrics for each participant
 %  RBD_Yhat   - RBD detection results using metrics
-%               in a random forest (each column represents 
-%               a new set of results) 
+%               in a random forest (each column represents
+%               a new set of results)
 %  label_name - Label inidcating source of sleep staging (Auto/Manual)
 %  print_figures - flag to save figures
 %  print_folder - folder name to save figures in
@@ -41,53 +41,51 @@ function compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figu
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 %New Features
 rbd_d_anno_data=[];
-cell_names = {}; 
+cell_names = {};
 for i=1:size(RBD_Yhat,2)
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1);
-ConfMat_RBD_Class_Summary = confusionmat(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1, 'order', [0 1]);
-kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
-rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
-
-cell_names = [[cell2mat(RBD_Yhat.Properties.VariableNames(i)),' (',label_name,')'],cell_names];
-% ['Established Metrics (',label_name,')'],['New Features (',label_name,')']
+    acc_metrics = process_classification_results(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1);
+    ConfMat_RBD_Class_Summary = confusionmat(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1, 'order', [0 1]);
+    kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
+    rbd_d_anno_data(i,:) = [acc_metrics, kappaRBD];
+    % ['Established Metrics (',label_name,')'],['New Features (',label_name,')']
+    cell_names = [[cell2mat(RBD_Yhat.Properties.VariableNames(i)),' (',label_name,')'],cell_names];
 end
 cell_names = [['MAD (',label_name,')'],['Stream (',label_name,')'],['Atonia Index (',label_name,')'],cell_names];
 
 %Atonia Index
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(EMG_Metric.AI_REM<0.9, [EMG_Metric.RBD==1]);
+acc_metrics = process_classification_results(EMG_Metric.AI_REM<0.9, [EMG_Metric.RBD==1]);
 ConfMat_RBD_Class_Summary = confusionmat(EMG_Metric.AI_REM<0.9, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
-rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
+rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
 %Stream
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(EMG_Metric.Stream>30, [EMG_Metric.RBD==1]);
+acc_metrics = process_classification_results(EMG_Metric.Stream>30, [EMG_Metric.RBD==1]);
 ConfMat_RBD_Class_Summary = confusionmat(EMG_Metric.Stream>30, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
-rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
-
+rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
 %Motor Activity
-[accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD] = process_classification_results(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, [EMG_Metric.RBD==1]);
+acc_metrics = process_classification_results(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, [EMG_Metric.RBD==1]);
 ConfMat_RBD_Class_Summary = confusionmat(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
-rbd_d_anno_data = [{accRBD, sensiRBD, speciRBD, precRBD, recallRBD, f1RBD, kappaRBD};rbd_d_anno_data];
+rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
 
 %%
 
-rbd_d_anno_tab = cell2table(rbd_d_anno_data,'VariableNames',{'Accuracy','Sensitivity','Specificity','Precision','Recall','F1','Kappa'},...
+rbd_d_anno_tab = array2table(rbd_d_anno_data,'VariableNames',{'Accuracy','Sensitivity','Specificity','Precision','Recall','F1','Kappa'},...
     'RowNames',cell_names);
 
-          
+
 if (print_figures)
     fig_rbd_d_annotated = figure('units','normalized','outerposition',[0 0 1 1]);
-
+    
     uitable(fig_rbd_d_annotated,'Data', rbd_d_anno_data,'ColumnName',rbd_d_anno_tab.Properties.VariableNames,...
-    'RowName',rbd_d_anno_tab.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);                
-
+        'RowName',rbd_d_anno_tab.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);
+    
     saveas(fig_rbd_d_annotated,strcat(print_folder,'\',['Summary_RBD_Detection_,',label_name,'_Table_All']),'png');
 end
 
 if display_flag
-   disp(['RBD Detection Summary (',label_name,'):']);
-   disp(rbd_d_anno_tab); 
+    disp(['RBD Detection Summary (',label_name,'):']);
+    disp(rbd_d_anno_tab);
 end
 
 end

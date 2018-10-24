@@ -16,7 +16,7 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 % There are several options to get PSG signals
 % (A) A folder containing all edf files and annotations
 % (B) Download files eg using CAP sleep database
-% (C) A folder containing all 'prepared' mat files of all PSG signals 
+% (C) A folder containing all 'prepared' mat files of all PSG signals
 % (D) Load Features matrix saved from ExtractFeatures
 
 %% (A) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
@@ -41,7 +41,7 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 %     'rbd3';
 %     'rbd4';
 %     'rbd5'};
-% 
+%
 % download_CAP_EDF_Annotations(outputfolder,list_of_files);
 % %Prepare mat files with PSG signals and annotations
 % prepare_capslpdb(outputfolder,outputfolder);
@@ -54,7 +54,7 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 % disp(['Extracting Features:',signals_for_processing]);
 % % Generate Features
 % [Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
-% 
+%
 % cd('../');
 % output_folder = [pwd,'\data\features'];
 % % Create a destination directory if it doesn't exist
@@ -86,7 +86,7 @@ print_folder = [data_folder, 'Graphs_', outfilename, slashchar];
 display_flag = 1; %Diplay results on command window
 save_data = 1; %Save Data
 
-%% Preprocess Data 
+%% Preprocess Data
 SS_Features = [11:144]; % Features used for sleep staging
 EMG_feats = [3,7,8,9,10,11,15,17,32,33]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3)
 EMG_est_feats = [3,7,8,9]; %AI, MAD_Dur, MAD_Per, Stream

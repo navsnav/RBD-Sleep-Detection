@@ -7,13 +7,13 @@ for i=1:length(num_subjects)
     for j=1:length(states)
         
         subject_idx = ismember(Sleep(:,1),num_subjects(i));
-        [acc, sensi, speci, prec, recall, f1] = process_classification_results(Yhat_Results(subject_idx)==states(j), Sleep(subject_idx,7)==states(j));
-        Accuracy(j,i) = acc;
-        Sensitivity(j,i) = sensi;
-        Specificity(j,i) = speci;
-        Precision(j,i) = prec;
-        Recall(j,i) = recall;
-        F1(j,i) = f1;
+        metrics = process_classification_results(Yhat_Results(subject_idx)==states(j), Sleep(subject_idx,7)==states(j));
+        Accuracy(j,i) = metrics(1);
+        Sensitivity(j,i) = metrics(2);
+        Specificity(j,i) = metrics(3);
+        Precision(j,i) = metrics(4);
+        Recall(j,i) = metrics(5);
+        F1(j,i) = metrics(6);
         %            if sum(Yhat_Results(subject_idx)==states(j))==0
         %               display([num2str(i),'&',num2str(j),' state found in subject']);
         %            end
