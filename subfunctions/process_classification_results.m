@@ -63,9 +63,8 @@ acc = numel(find(Yhat==Ytst))/length(Ytst);
 prec = TP/(TP+FP);
 recall = TP/(TP+FN);
 f1 = 2*((recall*prec)/(recall+prec));
-ppv = TP/(TP+FP);
 
-metrics = [acc, sensi, speci, prec, recall, f1, ppv];
+metrics = [acc, sensi, speci, prec, recall, f1];
 metrics(isnan(metrics)) = 0;
 
 end
