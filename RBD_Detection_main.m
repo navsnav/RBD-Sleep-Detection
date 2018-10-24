@@ -84,16 +84,12 @@ Sleep_table(remove_idx,:) = [];
 outfilename = 'RBD_Detection_Results_50trees_22_10_2018'; %Filename/Folder to be created
 view_results = 1; %Produce Graphs/figures
 print_figures= 1; %Save Graphs/figures
-print_folder = strcat(data_folder,'\Graphs_',outfilename);
+print_folder = strcat(data_folder,'Graphs_',outfilename);
 display_flag = 1; %Diplay results on command window
 save_data = 1; %Save Data
 
 %% Preprocess Data 
 SS_Features = [11:144]; % Features used for sleep staging
-% ECG_feats = [3,7,8,9,10,11,15,17,32,33,36,39,40,43]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
-% ECG_feats = [3,7,8,9,10,11,15,17,32,33,34:43]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
-ECG_feats = [3,7,8,9,10,11,15,17,32,33,34:121]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
-
 EMG_feats = [3,7,8,9,10,11,15,17,32,33]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3)
 EMG_est_feats = [3,7,8,9]; %AI, MAD_Dur, MAD_Per, Stream
 
