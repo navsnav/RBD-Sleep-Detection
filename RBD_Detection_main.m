@@ -77,14 +77,12 @@ cd(current_dir);
 %% Balance RBD & HC Cohort if needed
 
 [patients,ia,ic] = unique(Sleep_table.SubjectIndex);
-remove_idx = ismember(Sleep_table.SubjectIndex,patients(1:5));
-Sleep_table(remove_idx,:) = [];
 
 %% Parameters for generating results
 outfilename = 'RBD_Detection_Results_50trees_22_10_2018'; %Filename/Folder to be created
 view_results = 1; %Produce Graphs/figures
 print_figures= 1; %Save Graphs/figures
-print_folder = strcat(data_folder,'Graphs_',outfilename);
+print_folder = [data_folder, 'Graphs_', outfilename, slashchar];
 display_flag = 1; %Diplay results on command window
 save_data = 1; %Save Data
 
