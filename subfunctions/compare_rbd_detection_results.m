@@ -68,6 +68,7 @@ for i=1:size(RBD_Yhat,2)
     acc_metrics = process_classification_results(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1);
     ConfMat_RBD_Class_Summary = confusionmat(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1, 'order', [0 1]);
     kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
+    rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
     % ['Established Metrics (',label_name,')'],['New Features (',label_name,')']
     cell_names{end+1} = [cell2mat(RBD_Yhat.Properties.VariableNames(i)),' (',label_name,')'];
 end
