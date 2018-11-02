@@ -50,8 +50,11 @@ for i=1:length(num_subjects)
 
     sub_idx = ismember(Sleep(:,1),num_subjects(i)); 
 
-    [acc(i), sensi(i), speci(i), prec(i), recall(i), f1(i)] = process_classification_results(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5);
-
+    metrics = process_classification_results(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5);
+    acc = metrics(1);
+    sensi = metrics(2);
+    speci = metrics(3);
+    
     ConfMat1{i} = confusionmat(Yhat(sub_idx), Sleep(sub_idx,7), 'order', [0 1 2 3 5]);
     ConfMat3{i} = confusionmat(Yhat(sub_idx)==5, Sleep(sub_idx,7)==5, 'order', [0 1]);
     kappa(i) = kappa_result(ConfMat3{i});    
@@ -80,7 +83,7 @@ for i=1:length(num_subjects)
     set(gca,'YTickLabel',{'W','N1','N2','N3','R','M'})    
     a(2) = subplot(2,1,2);
     plot(Yhat(sub_idx),'r');
-    title(['RF Classification (Accuracy:  ',num2str(acc(i),'%1.2f'),' Sensitivity:  ',num2str(sensi(i),'%1.2f'),' Specificity:  ',num2str(speci(i),'%1.2f'),')']);
+    title(['RF Classification (Accuracy:  ',num2str(acc,'%1.2f'),' Sensitivity:  ',num2str(sensi,'%1.2f'),' Specificity:  ',num2str(speci,'%1.2f'),')']);
     ylabel('Sleep Stage');
     xlabel('Epoch #');
     ylim([-0.5 6]);

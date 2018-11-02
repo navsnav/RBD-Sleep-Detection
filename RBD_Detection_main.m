@@ -16,7 +16,7 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 % There are several options to get PSG signals
 % (A) A folder containing all edf files and annotations
 % (B) Download files eg using CAP sleep database
-% (C) A folder containing all 'prepared' mat files of all PSG signals 
+% (C) A folder containing all 'prepared' mat files of all PSG signals
 % (D) Load Features matrix saved from ExtractFeatures
 
 %% (A) Extract PSG Signals  - Use this section if you have a folder of edf files with annotations
@@ -41,7 +41,7 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 %     'rbd3';
 %     'rbd4';
 %     'rbd5'};
-% 
+%
 % download_CAP_EDF_Annotations(outputfolder,list_of_files);
 % %Prepare mat files with PSG signals and annotations
 % prepare_capslpdb(outputfolder,outputfolder);
@@ -54,7 +54,7 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 % disp(['Extracting Features:',signals_for_processing]);
 % % Generate Features
 % [Sleep, Sleep_Struct, Sleep_table] = ExtractFeatures_mat(data_folder,signals_for_processing);
-% 
+%
 % cd('../');
 % output_folder = [pwd,'\data\features'];
 % % Create a destination directory if it doesn't exist
@@ -69,31 +69,25 @@ addpath(genpath([main_dir, 'models', slashchar])) % add classifiers folder to pa
 
 %% (D) Load Features matrix saved from ExtractFeatures
 current_dir = pwd;
-data_folder = 'C:\Users\scro2778\Documents\GitHub\RBD-Sleep-Detection\data\features';
+data_folder = [main_dir, 'data', slashchar, 'features', slashchar];
 cd(data_folder);
-filename = 'Features_With_ECG.mat';
+filename = 'Features_demo.mat';
 load(filename);
 cd(current_dir);
 %% Balance RBD & HC Cohort if needed
 
 [patients,ia,ic] = unique(Sleep_table.SubjectIndex);
-remove_idx = ismember(Sleep_table.SubjectIndex,patients(1:5));
-Sleep_table(remove_idx,:) = [];
 
 %% Parameters for generating results
 outfilename = 'RBD_Detection_Results_50trees_22_10_2018'; %Filename/Folder to be created
 view_results = 1; %Produce Graphs/figures
 print_figures= 1; %Save Graphs/figures
-print_folder = strcat(data_folder,'\Graphs_',outfilename);
+print_folder = [data_folder, 'Graphs_', outfilename, slashchar];
 display_flag = 1; %Diplay results on command window
 save_data = 1; %Save Data
 
-%% Preprocess Data 
+%% Preprocess Data
 SS_Features = [11:144]; % Features used for sleep staging
-% ECG_feats = [3,7,8,9,10,11,15,17,32,33,36,39,40,43]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
-% ECG_feats = [3,7,8,9,10,11,15,17,32,33,34:43]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
-ECG_feats = [3,7,8,9,10,11,15,17,32,33,34:121]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
-
 EMG_feats = [3,7,8,9,10,11,15,17,32,33]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3)
 EMG_est_feats = [3,7,8,9]; %AI, MAD_Dur, MAD_Per, Stream
 
