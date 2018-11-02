@@ -42,31 +42,39 @@ function compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figu
 %New Features
 rbd_d_anno_data=[];
 cell_names = {};
-for i=1:size(RBD_Yhat,2)
-    acc_metrics = process_classification_results(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1);
-    ConfMat_RBD_Class_Summary = confusionmat(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1, 'order', [0 1]);
-    kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
-    rbd_d_anno_data(i,:) = [acc_metrics, kappaRBD];
-    % ['Established Metrics (',label_name,')'],['New Features (',label_name,')']
-    cell_names = [[cell2mat(RBD_Yhat.Properties.VariableNames(i)),' (',label_name,')'],cell_names];
-end
-cell_names = [['MAD (',label_name,')'],['Stream (',label_name,')'],['Atonia Index (',label_name,')'],cell_names];
+
+%Motor Activity
+acc_metrics = process_classification_results(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, [EMG_Metric.RBD==1]);
+ConfMat_RBD_Class_Summary = confusionmat(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, EMG_Metric.RBD==1, 'order', [0 1]);
+kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
+rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
+
+%Stream
+acc_metrics = process_classification_results(EMG_Metric.Stream>30, [EMG_Metric.RBD==1]);
+ConfMat_RBD_Class_Summary = confusionmat(EMG_Metric.Stream>30, EMG_Metric.RBD==1, 'order', [0 1]);
+kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
+rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
 
 %Atonia Index
 acc_metrics = process_classification_results(EMG_Metric.AI_REM<0.9, [EMG_Metric.RBD==1]);
 ConfMat_RBD_Class_Summary = confusionmat(EMG_Metric.AI_REM<0.9, EMG_Metric.RBD==1, 'order', [0 1]);
 kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
 rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
-%Stream
-acc_metrics = process_classification_results(EMG_Metric.Stream>30, [EMG_Metric.RBD==1]);
-ConfMat_RBD_Class_Summary = confusionmat(EMG_Metric.Stream>30, EMG_Metric.RBD==1, 'order', [0 1]);
-kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
-rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
-%Motor Activity
-acc_metrics = process_classification_results(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, [EMG_Metric.RBD==1]);
-ConfMat_RBD_Class_Summary = confusionmat(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, EMG_Metric.RBD==1, 'order', [0 1]);
-kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
-rbd_d_anno_data(end+1,:) = [acc_metrics, kappaRBD];
+
+cell_names = [['MAD (',label_name,')'],['Stream (',label_name,')'],['Atonia Index (',label_name,')'],cell_names];
+
+
+for i=1:size(RBD_Yhat,2)
+    acc_metrics = process_classification_results(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1);
+    ConfMat_RBD_Class_Summary = confusionmat(table2array(RBD_Yhat(:,i))==1, EMG_Metric.RBD==1, 'order', [0 1]);
+    kappaRBD = kappa_result(ConfMat_RBD_Class_Summary);
+    % ['Established Metrics (',label_name,')'],['New Features (',label_name,')']
+    cell_names{end+1} = [cell2mat(RBD_Yhat.Properties.VariableNames(i)),' (',label_name,')'];
+end
+
+
+
+
 
 %%
 

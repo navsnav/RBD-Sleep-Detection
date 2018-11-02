@@ -220,8 +220,8 @@ for out=1:folds
     EMG_Auto_est_votes_Results(PatientTest,:) = EMG_Auto_est_votes;
     EMG_Auto_Metric = [EMG_Auto_Metric;EMG_Auto_Test_Table];
     
-    RBD_Yhat = [RBD_Yhat;[EMG_Yhat,EMG_est_Yhat]];
-    RBD_Auto_Yhat = [RBD_Auto_Yhat ;[EMG_Auto_Yhat,EMG_Auto_est_Yhat]];
+    RBD_Yhat = [RBD_Yhat;[EMG_est_Yhat,EMG_Yhat]];
+    RBD_Auto_Yhat = [RBD_Auto_Yhat ;[EMG_Auto_est_Yhat,EMG_Auto_Yhat]];
     
     %% RBD Detection Results
     
@@ -294,7 +294,7 @@ if (save_data),save(strcat(print_folder,'\',Save_Data_Name,'.mat'),'Sleep','Slee
         'importance_Results','SS_Features',...
         'EMG_importance_Results','EMG_Yhat_Results','EMG_votes_Results',...
         'EMG_est_Yhat_Results','EMG_Auto_Yhat_Results','EMG_Auto_est_Yhat_Results',...
-        'EMG_est_feats','EMG_feats','EMG_Auto_Metric','EMG_Metric','EMG_Table_Names',...
+        'EMG_est_feats','EMG_feats','EMG_Auto_Metric','EMG_Metric','EMG_Table_Names','RBD_Yhat','RBD_Auto_Yhat',...
         'results_f_est','results_f_new','results_f_est_auto','results_f_new_auto','All_Confusion');
 end
 
