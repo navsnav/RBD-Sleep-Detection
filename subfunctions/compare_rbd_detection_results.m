@@ -42,7 +42,6 @@ function compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figu
 %New Features
 rbd_d_anno_data=[];
 cell_names = {}; 
-for i=1:size(RBD_Yhat,2)
 
 %Motor Activity
 acc_metrics = process_classification_results(max(EMG_Metric.MAD_Dur,EMG_Metric.MAD_Per)>0.10, [EMG_Metric.RBD==1]);
@@ -90,7 +89,7 @@ if (print_figures)
     uitable(fig_rbd_d_annotated,'Data', rbd_d_anno_data,'ColumnName',rbd_d_anno_tab.Properties.VariableNames,...
         'RowName',rbd_d_anno_tab.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);
     
-    saveas(fig_rbd_d_annotated,strcat(print_folder,'\',['Summary_RBD_Detection_,',label_name,'_Table_All']),'png');
+    saveas(fig_rbd_d_annotated,strcat(print_folder,'\',['Summary_RBD_Detection_',label_name,'_Table_All']),'png');
 end
 
 if display_flag

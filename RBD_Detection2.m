@@ -1,36 +1,36 @@
 function [Yhat_Results,EMG_Yhat_Results,EMG_est_Yhat_Results,EMG_Auto_Yhat_Results,EMG_Auto_est_Yhat_Results,All_Confusion] = RBD_Detection2(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,ECG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag)
-  % Copyright (c) 2018, Navin Cooray (University of Oxford)
-  % All rights reserved.
-  %
-  % Redistribution and use in source and binary forms, with or without
-  % modification, are permitted provided that the following conditions are
-  % met:
-  %
-  % 1. Redistributions of source code must retain the above copyright
-  %    notice, this list of conditions and the following disclaimer.
-  %
-  % 2. Redistributions in binary form must reproduce the above copyright
-  %    notice, this list of conditions and the following disclaimer in the
-  %    documentation and/or other materials provided with the distribution.
-  %
-  % 3. Neither the name of the University of Oxford nor the names of its
-  %    contributors may be used to endorse or promote products derived
-  %    from this software without specific prior written permission.
-  %
-  % THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  % "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  % LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-  % A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-  % HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  % SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  % LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-  % DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-  % THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  % (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  % OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+% Copyright (c) 2018, Navin Cooray (University of Oxford)
+% All rights reserved.
+%
+% Redistribution and use in source and binary forms, with or without
+% modification, are permitted provided that the following conditions are
+% met:
+%
+% 1. Redistributions of source code must retain the above copyright
+%    notice, this list of conditions and the following disclaimer.
+%
+% 2. Redistributions in binary form must reproduce the above copyright
+%    notice, this list of conditions and the following disclaimer in the
+%    documentation and/or other materials provided with the distribution.
+%
+% 3. Neither the name of the University of Oxford nor the names of its
+%    contributors may be used to endorse or promote products derived
+%    from this software without specific prior written permission.
+%
+% THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+% "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+% LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+% A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+% HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+% SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+% LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+% DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+% THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+% (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+% OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-  %	Contact: navsnav@gmail.com
-  %	Originally written by Navin Cooray 19-Sept-2018
+%	Contact: navsnav@gmail.com
+%	Originally written by Navin Cooray 19-Sept-2018
 % Input:
 %       Sleep_table_Pre:    Sleep table with all features and subjects (preprocessed to have no nans/infs).
 %       Sleep_Struct: 	Structure containing all features and feature names
@@ -81,24 +81,26 @@ importance_Results = [];
 EMG_importance_Results = [];
 EMG_est_importance_Results = [];
 importance_Results_REM = [];
-
+RBD_Yhat = table;
 Yhat_Results = zeros(size(Sleep,1),1);
 votes_Results = zeros(size(Sleep,1),5);
-EMG_Metric = zeros(size(rbd_group,1),length(ECG_feats));
+% EMG_Metric = zeros(size(rbd_group,1),length(ECG_feats));
+EMG_Metric = table;
 ECG_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 ECG_votes_Results = zeros(size(rbd_group,1),2);
 EMG_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_votes_Results = zeros(size(rbd_group,1),2);
 EMG_est_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_est_votes_Results = zeros(size(rbd_group,1),2);
-EMG_Auto_Metric = zeros(size(rbd_group,1),length(ECG_feats));
+% EMG_Auto_Metric = zeros(size(rbd_group,1),length(ECG_feats));
+EMG_Auto_Metric = table;
 ECG_Auto_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 ECG_Auto_votes_Results = zeros(size(rbd_group,1),2);
 EMG_Auto_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_Auto_votes_Results = zeros(size(rbd_group,1),2);
 EMG_Auto_est_Yhat_Results = ones(size(rbd_group,1),1)*-1;
 EMG_Auto_est_votes_Results = zeros(size(rbd_group,1),2);
-
+RBD_Auto_Yhat = table;
 results_f_est = zeros(folds,6);
 results_f_new = zeros(folds,6);   
 results_f_est_auto = zeros(folds,6);
@@ -175,14 +177,14 @@ for out=1:folds
     
     %Predict using all emg features for annotated Sleep Staging
 %     [EMG_Yhat EMG_votes EMG_predict_val] = classRF_predict(EMG_Xtst,emg_rf,extra_options);
-    [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst);    
+    [EMG_Yhat,EMG_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Xtst,'New_Features');    
     
     %Predict using all established emg features for annotated Sleep Staging
 %     [EMG_est_Yhat EMG_est_votes EMG_est_predict_val] = classRF_predict(EMG_est_Xtst,emg_est_rf,extra_options);    
-    [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_est_Xtst);    
+    [EMG_est_Yhat,EMG_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_est_Xtst,'Established_Features');    
 
     %Predict using all rbd features (incl. ecg) for annotated Sleep Staging
-    [ECG_Yhat,ECG_votes] = Predict_RBDDetection_RF(ecg_rf,ECG_Xtst);       
+    [ECG_Yhat,ECG_votes] = Predict_RBDDetection_RF(ecg_rf,ECG_Xtst,'ECG_Features');       
     
  %% Test RBD Detection using Automatic Sleep Staging
     
@@ -200,15 +202,15 @@ for out=1:folds
     % Train RF for RBD Detection using Automatic Sleep Staging
     %Predict using all emg featres for automatically annoated Sleep Staging
 %     [EMG_Auto_Yhat EMG_Auto_votes EMG_Auto_predict_val] = classRF_predict(EMG_Auto_Xtst,emg_rf,extra_options);
-    [EMG_Auto_Yhat,EMG_Auto_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Auto_Xtst);    
+    [EMG_Auto_Yhat,EMG_Auto_votes] = Predict_RBDDetection_RF(emg_rf,EMG_Auto_Xtst,'New_Features');    
     
     %Predict using all established emg featres for automatically annoated Sleep Staging
 %     [EMG_Auto_est_Yhat EMG_Auto_est_votes EMG_Auto_est_predict_val] = classRF_predict(EMG_Auto_est_Xtst,emg_est_rf,extra_options);   
-    [EMG_Auto_est_Yhat,EMG_Auto_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_Auto_est_Xtst);    
+    [EMG_Auto_est_Yhat,EMG_Auto_est_votes] = Predict_RBDDetection_RF(emg_est_rf,EMG_Auto_est_Xtst,'Established_Features');    
     % Train RF for RBD Detection using Automatic Sleep Staging
     
     %Predict using all ecg featres for automatically annoated Sleep Staging
-    [ECG_Auto_Yhat,ECG_Auto_votes] = Predict_RBDDetection_RF(ecg_rf,ECG_Auto_Xtst);    
+    [ECG_Auto_Yhat,ECG_Auto_votes] = Predict_RBDDetection_RF(ecg_rf,ECG_Auto_Xtst,'ECG_Features');    
    
     %% Store Results  
     % Automated Sleep Staging
@@ -216,44 +218,45 @@ for out=1:folds
     votes_Results(PatientTest_idx,:) = votes;
     importance_Results(:,:,out) = [rf_importance];            
     % RBD Detection using Annoated Sleep Staging
-    ECG_Yhat_Results(PatientTest) = ECG_Yhat;    
+    ECG_Yhat_Results(PatientTest) = table2array(ECG_Yhat);    
     ECG_votes_Results(PatientTest,:) = ECG_votes;   
-    EMG_Yhat_Results(PatientTest) = EMG_Yhat;    
+    EMG_Yhat_Results(PatientTest) = table2array(EMG_Yhat);    
     EMG_votes_Results(PatientTest,:) = EMG_votes;    
-    EMG_est_Yhat_Results(PatientTest) = EMG_est_Yhat;    
+    EMG_est_Yhat_Results(PatientTest) = table2array(EMG_est_Yhat);    
     EMG_est_votes_Results(PatientTest,:) = EMG_est_votes;     
-    EMG_Metric(PatientTest,:) = ECG_Xtst;        
+%     EMG_Metric(PatientTest,:) = ECG_Xtst; 
+    EMG_Metric = [EMG_Metric;EMG_Annotated_Test_Table];
+
     ECG_importance_Results(:,:,out) = [ecg_rf_importance];        
     EMG_importance_Results(:,:,out) = [emg_rf_importance];        
     EMG_est_importance_Results(:,:,out) = [emg_est_rf_importance];     
     % RBD Detection using Automatic Sleep Staging
-    ECG_Auto_Yhat_Results(PatientTest) = ECG_Auto_Yhat;    
+    ECG_Auto_Yhat_Results(PatientTest) = table2array(ECG_Auto_Yhat);    
     ECG_Auto_votes_Results(PatientTest,:) = ECG_Auto_votes;    
-    EMG_Auto_Yhat_Results(PatientTest) = EMG_Auto_Yhat;    
+    EMG_Auto_Yhat_Results(PatientTest) = table2array(EMG_Auto_Yhat);    
     EMG_Auto_votes_Results(PatientTest,:) = EMG_Auto_votes;    
-    EMG_Auto_est_Yhat_Results(PatientTest) = EMG_Auto_est_Yhat;    
+    EMG_Auto_est_Yhat_Results(PatientTest) = table2array(EMG_Auto_est_Yhat);    
     EMG_Auto_est_votes_Results(PatientTest,:) = EMG_Auto_est_votes;               
-    EMG_Auto_Metric(PatientTest,:) = ECG_Auto_Xtst;
+%     EMG_Auto_Metric(PatientTest,:) = ECG_Auto_Xtst;
+    EMG_Auto_Metric = [EMG_Auto_Metric;EMG_Auto_Test_Table];
+    
+    RBD_Yhat = [RBD_Yhat;[EMG_est_Yhat,EMG_Yhat,ECG_Yhat]];
+    RBD_Auto_Yhat = [RBD_Auto_Yhat ;[EMG_Auto_est_Yhat,EMG_Auto_Yhat,ECG_Auto_Yhat]];    
     
 %% RBD Detection Results
-    
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_est_Yhat==1, rbd_group(PatientTest)==1);
-    results_f_est(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
-    
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Yhat==1, rbd_group(PatientTest)==1);
-    results_f_new(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];
- 
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(ECG_Yhat==1, rbd_group(PatientTest)==1);
-    results_f_ecg(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];    
-    
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_est_Yhat==1, rbd_group(PatientTest)==1);
-    results_f_est_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];    
- 
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(EMG_Auto_Yhat==1, rbd_group(PatientTest)==1);
-    results_f_new_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];   
 
-    [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf]  = process_classification_results2(ECG_Auto_Yhat==1, rbd_group(PatientTest)==1);
-    results_f_ecg_auto(out,:) = [accRBDf, sensiRBDf, speciRBDf, precRBDf, recallRBDf, f1RBDf];       
+    results_f_est(out,:)  = process_classification_results(table2array(EMG_est_Yhat)==1, rbd_group(PatientTest)==1);
+    
+    results_f_new(out,:)  = process_classification_results(table2array(EMG_Yhat)==1, rbd_group(PatientTest)==1);
+    
+    results_f_ecg(out,:) = process_classification_results(table2array(ECG_Yhat)==1, rbd_group(PatientTest)==1);
+   
+    results_f_est_auto(out,:) = process_classification_results(table2array(EMG_Auto_est_Yhat)==1, rbd_group(PatientTest)==1);
+    
+    results_f_new_auto(out,:) = process_classification_results(table2array(EMG_Auto_Yhat)==1, rbd_group(PatientTest)==1);
+   
+    results_f_ecg_auto(out,:) = process_classification_results(table2array(ECG_Auto_Yhat)==1, rbd_group(PatientTest)==1);     
+
 end
 
 %% Save Data
@@ -283,11 +286,11 @@ if (view_results)
    rbd_detect_name3 = 'New ECG Features (Automated)';
    tablename = 'Summary_RBD_Detection_Automated';  
    print_rbd_detection_results2(results_f_est_auto,results_f_new_auto,results_f_ecg_auto,rbd_detect_name1,rbd_detect_name2,rbd_detect_name3,tablename,print_figures,print_folder); 
-   %Compare RBD Detection (annotated)
-   label_name = 'Annotated';
-   compare_rbd_detection_results(EMG_Metric,EMG_est_Yhat_Results,EMG_Yhat_Results,ECG_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
-   label_name = 'Automated';
-   compare_rbd_detection_results(EMG_Auto_Metric,EMG_Auto_est_Yhat_Results,EMG_Auto_Yhat_Results,ECG_Auto_Yhat_Results,rbd_group,EMG_Table_Names,EMG_feats,label_name,print_figures,print_folder,display_flag);
+    %Compare RBD Detection (annotated)
+    label_name = 'Annotated';
+    compare_rbd_detection_results(EMG_Metric,RBD_Yhat,label_name,print_figures,print_folder,display_flag);
+    label_name = 'Automated';
+    compare_rbd_detection_results(EMG_Auto_Metric,RBD_Auto_Yhat,label_name,print_figures,print_folder,display_flag);
 end
 
 
@@ -317,10 +320,10 @@ if (save_data),save(strcat(print_folder,'\',Save_Data_Name,'.mat'),'Sleep','Slee
         'importance_Results','SS_Features',...
         'EMG_importance_Results','EMG_Yhat_Results','EMG_votes_Results',...
         'EMG_est_Yhat_Results','EMG_Auto_Yhat_Results','EMG_Auto_est_Yhat_Results',...
-        'EMG_est_feats','EMG_feats','EMG_Auto_Metric','EMG_Metric','EMG_Table_Names',...
-        'results_f_est','results_f_new','results_f_est_auto','results_f_new_auto','All_Confusion');
+        'EMG_est_feats','EMG_feats','ECG_feats','EMG_Auto_Metric','EMG_Metric','EMG_Table_Names',...
+        'ECG_Yhat_Results','ECG_Auto_Yhat_Results','ECG_votes_Results','ECG_Auto_votes_Results','RBD_Yhat','RBD_Auto_Yhat',...
+        'results_f_est','results_f_new','results_f_est_auto','results_f_new_auto','results_f_ecg','results_f_ecg_auto','All_Confusion');
 end
-
 
 
 end
