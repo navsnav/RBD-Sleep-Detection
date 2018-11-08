@@ -79,7 +79,7 @@ cd(current_dir);
 [patients,ia,ic] = unique(Sleep_table.SubjectIndex);
 
 %% Parameters for generating results
-outfilename = 'RBD_Detection_Results_50trees_ECG_5_11_2018'; %Filename/Folder to be created
+outfilename = 'RBD_Detection_Results_500trees_ECG_6_11_2018'; %Filename/Folder to be created
 view_results = 1; %Produce Graphs/figures
 print_figures= 1; %Save Graphs/figures
 print_folder = [data_folder, 'Graphs_', outfilename, slashchar];
@@ -88,7 +88,7 @@ save_data = 1; %Save Data
 
 %% Preprocess Data
 % SS_Features = [11:144]; % Features used for sleep staging
-SS_Features = [11:29,31:139]; % Features used for sleep staging
+SS_Features = [11:29,31:139,192,193]; % Features used for sleep staging
 
 EMG_feats = [3,7,8,9,10,11,15,17,32,33]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3)
 EMG_est_feats = [3,7,8,9]; %AI, MAD_Dur, MAD_Per, Stream
@@ -100,7 +100,7 @@ disp('Precprocessing Features...');
 disp('Precprocessing Complete.');
 
 % Random Forest paramters
-n_trees = 50;  %Paper used 500 trees (done to save time/space)
+n_trees = 500;  %Paper used 500 trees (done to save time/space)
 
 %% Cross Fold Indexing
 Sleep = table2array(Sleep_table_Pre);
