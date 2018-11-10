@@ -271,9 +271,9 @@ end
 %% Print Feature Importance Results
 if (view_results)
     %RBD Importance (Gini)
-    order_idx = size(EMG_importance_Results,2); %Mean Decrease in Gini
-    titlename = 'Feature Importance - Mean Decrease in Gini Index';
-    xname = 'Mean Decrease in Gini Index (Importance)';
+    order_idx = 1; %Mean Decrease in Gini
+    titlename = 'Feature Importance - Permuted Predictor Delta Error';
+    xname = 'Permuted Predictor Delta Error (Importance)';
     print_feature_importance(EMG_importance_Results,order_idx,EMG_Table_Names,EMG_feats,titlename,xname,print_figures,print_folder);
 end
 

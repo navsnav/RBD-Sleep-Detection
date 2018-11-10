@@ -34,13 +34,15 @@ function generate_confmat(ConfMat1,Subject,print_figures,print_folder)
 %
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+    Per_SumConfMat = ConfMat1./sum(ConfMat1,1);
+    kappa = kappa_result(ConfMat1);
 % Generate confusion matrix
     fig_num = figure;
-    imagesc(0:4,0:4,ConfMat1)  
+    imagesc(0:4,0:4,Per_SumConfMat)  
     colormap(flipud(gray))
+
     %   format_figure
-    title(['Sleep stage Classifications - Subject ',Subject], 'Interpreter', 'none');
+    title(['Sleep Stage Classifications - Subject ',Subject,', CKappa: ',num2str(kappa,2)], 'Interpreter', 'none');
     xlabel('Annotated Sleep Staging');
     ylabel('Automated Sleep Staging');
     set(gca,'XTick',[0 1 2 3 4]);
@@ -52,9 +54,9 @@ function generate_confmat(ConfMat1,Subject,print_figures,print_folder)
     for k = 1:5
         for j = 1:5
             if k == j
-               text(k-1, j-1, num2str(ConfMat1(j,k)), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize',16,'Color','white')                           
+               text(k-1, j-1, sprintf([num2str(Per_SumConfMat(j,k)*100,3),'%%\n',num2str(ConfMat1(j,k))]), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize',10,'Color','white')                           
             else
-                text(k-1, j-1, num2str(ConfMat1(j,k)), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize',16)            
+                text(k-1, j-1, sprintf([num2str(Per_SumConfMat(j,k)*100,3),'%%\n',num2str(ConfMat1(j,k))]), 'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', 'FontSize',10)            
             end
         end
     end

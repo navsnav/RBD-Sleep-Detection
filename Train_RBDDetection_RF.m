@@ -41,6 +41,6 @@ function [emg_rf,emg_rf_importance] = Train_RBDDetection_RF(n_trees,EMG_Table,EM
 %       emg_rf_importance: Feature importance values for each feature.
 
     emg_rf = TreeBagger(n_trees,EMG_Table(:,EMG_feats),EMG_Ytrn,'OOBPredictorImportance','on'); 
-    emg_rf_importance = emg_rf.OOBPermutedPredictorDeltaError';
+    emg_rf_importance = [emg_rf.OOBPermutedPredictorDeltaError',emg_rf.DeltaCriterionDecisionSplit'];
 
 end

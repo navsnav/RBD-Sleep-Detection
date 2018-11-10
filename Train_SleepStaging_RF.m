@@ -41,6 +41,6 @@ function [ss_rf,ss_rf_importance] = Train_SleepStaging_RF(n_trees,Sleep_table,SS
 %       ss_rf_importance: Feature importance values for each feature.
 
     ss_rf               = TreeBagger(n_trees,Sleep_table(:,SS_Features),hyp,'OOBPredictorImportance','on'); 
-    ss_rf_importance    =  ss_rf.OOBPermutedPredictorDeltaError';
+    ss_rf_importance    =  [ss_rf.OOBPermutedPredictorDeltaError',ss_rf.DeltaCriterionDecisionSplit'];
 
 end
