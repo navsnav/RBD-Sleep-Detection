@@ -278,14 +278,12 @@ if (view_results)
 end
 
 %% Print Annotated Vs Automatic RBD Metrics
-if (view_results)
+if (print_figures)
     print_annotated_vs_auto(EMG_Table_Names,EMG_feats,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
 end
 
 %% Print Confusion Matrices/Hypnograms
-if (view_results)
-    All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat_Results,print_figures,print_folder);
-end
+All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat_Results,print_figures,print_folder);
 
 %%
 if (save_data),save(strcat(print_folder,'\',Save_Data_Name,'.mat'),'Sleep','Sleep_table','Sleep_Struct',...
