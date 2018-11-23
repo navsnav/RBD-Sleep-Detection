@@ -66,6 +66,7 @@ regexp_string = '\[t\](........)\[\\t\]';
 list_url = [annotations_url 'RECORDS'];
 %edfx_webpage_source = urlread(list_url);
 options = weboptions('ContentType','text');
+options.Timeout = 30;
 edfx_webpage_source = webread(list_url,options);
 
 
@@ -82,7 +83,7 @@ url_of_file = [annotations_url 'gender-age.xlsx'];
 fprintf('Downloading: %s for test %s\n', 'gender-age.xlsx');
 %[saved_file, status] = urlwrite(url_of_file,path_of_file);
 if(~exist(path_of_file,'file'))
-    [saved_file] = websave(path_of_file,url_of_file);
+    [saved_file] = websave(path_of_file,url_of_file,options);
     fprintf('File saved: %s ... OK\n', saved_file);
     [num,txt,raw]  = xlsread(path_of_file);    
     M = table(txt(:,1),txt(:,2),num,'VariableNames',{'Pathology','Gender','Age'});

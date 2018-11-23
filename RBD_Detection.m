@@ -271,21 +271,19 @@ end
 %% Print Feature Importance Results
 if (view_results)
     %RBD Importance (Gini)
-    order_idx = size(EMG_importance_Results,2); %Mean Decrease in Gini
-    titlename = 'Feature Importance - Mean Decrease in Gini Index';
-    xname = 'Mean Decrease in Gini Index (Importance)';
+    order_idx = 1; %Mean Decrease in Gini
+    titlename = 'Feature Importance - Permuted Predictor Delta Error';
+    xname = 'Permuted Predictor Delta Error (Importance)';
     print_feature_importance(EMG_importance_Results,order_idx,EMG_Table_Names,EMG_feats,titlename,xname,print_figures,print_folder);
 end
 
 %% Print Annotated Vs Automatic RBD Metrics
-if (view_results)
+if (print_figures)
     print_annotated_vs_auto(EMG_Table_Names,EMG_feats,EMG_Metric,EMG_Auto_Metric,print_figures,print_folder);
 end
 
 %% Print Confusion Matrices/Hypnograms
-if (view_results)
-    All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat_Results,print_figures,print_folder);
-end
+All_Confusion = print_confusion_mats(Sleep,Sleep_Struct,Yhat_Results,print_figures,print_folder);
 
 %%
 if (save_data),save(strcat(print_folder,'\',Save_Data_Name,'.mat'),'Sleep','Sleep_table','Sleep_Struct',...

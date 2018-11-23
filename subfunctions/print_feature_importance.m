@@ -48,13 +48,27 @@ EMG_Importance_Acc = squeeze(EMG_importance_Results(:,order_idx,:));
 mu_EMG_Importance_Acc = mean(EMG_Importance_Acc,2);
 [B,I] = sort(mu_EMG_Importance_Acc,'ascend');
 fignum = figure;
-hbar = barh(B,'stacked','r');
+hold on;
+for i=1:length(B)
+    hbar = barh(i,B(i),'stacked');
+    if mod(i,2) == 0
+        set(hbar,'FaceColor',[0,114/256,189/256]);        
+    else
+        set(hbar,'FaceColor',[191/256,74/256,74/256]);                
+    end
+    
+end
+% hbar = barh(B,'stacked','r');
 set(gca,'TickLabelInterpreter', 'none');
-x = get(hbar,'XData');
+x = 1:length(B);
 yticks(x);
 yticklabels(EMG_Table_Names(EMG_feats(I)));
 title(titlename);
 xlabel(xname);
-if (print_figures), saveas(fignum,strcat(print_folder,'\',titlename),'png'), end
+if (print_figures)
+    saveas(fignum,strcat(print_folder,'\',titlename),'png');
+    saveas(fignum,strcat(print_folder,'\',titlename),'fig');
+    
+end
 
 end

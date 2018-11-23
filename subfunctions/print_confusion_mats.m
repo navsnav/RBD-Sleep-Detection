@@ -68,41 +68,41 @@ for i=1:length(num_subjects)
     kappa_SS(i) = (n_a-agree_chance)/(n-agree_chance);          
     %% Generate Figures
     % Confusion Matrix
-  
-    generate_confmat(ConfMat1{i},Subject{i},print_figures,print_folder);
-    
-    %Hypnograms
-    fig_1 = figure;
-    a(1) = subplot(2,1,1);
-    plot(Sleep(sub_idx,7));
-    title(['Annotated Test Sequence: ',Subject{i}], 'Interpreter', 'none');
-    ylabel('Sleep Stage');
-    xlabel('Epoch #');
-    ylim([-0.5 6]);
-    set(gca,'YTick',[0 1 2 3 5 6])
-    set(gca,'YTickLabel',{'W','N1','N2','N3','R','M'})    
-    a(2) = subplot(2,1,2);
-    plot(Yhat(sub_idx),'r');
-    title(['RF Classification (Accuracy:  ',num2str(acc,'%1.2f'),' Sensitivity:  ',num2str(sensi,'%1.2f'),' Specificity:  ',num2str(speci,'%1.2f'),')']);
-    ylabel('Sleep Stage');
-    xlabel('Epoch #');
-    ylim([-0.5 6]);
-    set(gca,'YTick',[0 1 2 3 5 6])
-    set(gca,'YTickLabel',{'W','N1','N2','N3','R','M'})
-    linkaxes(a,'x');
-    if (print_figures), saveas(fig_1,strcat(print_folder,'\','RF_Hyp_Comparison_',Subject{i}),'epsc'), end
+    if print_figures
+        generate_confmat(ConfMat1{i},Subject{i},print_figures,print_folder);
 
-    fig_1b = figure;
-    h1a = plot(Sleep(sub_idx,7),'DisplayName','Hypnogram','LineWidth',2);
-    title(['Annotated Test Sequence: ',Subject{i}], 'Interpreter', 'none');
-    ylabel('Sleep Stage');
-    xlabel('Epoch #');
-    ylim([-0.5 6]);
-    set(gca,'YTick',[0 1 2 3 5 6])
-    set(gca,'YTickLabel',{'W','N1','N2','N3','R','M'})   
-    hold on;
-    h2a = plot(Yhat(sub_idx),'r','DisplayName','RF Result','LineWidth',1);
-    if (print_figures), saveas(fig_1b,strcat(print_folder,'\','RF_Hyp_AlignComp_',Subject{i}),'epsc'), end
+        %Hypnograms
+        fig_1 = figure;
+        a(1) = subplot(2,1,1);
+        stairs(Sleep(sub_idx,7),'LineWidth',1);
+        title(['Annotated Test Sequence: ',Subject{i}], 'Interpreter', 'none');
+        ylabel('Sleep Stage');
+        xlabel('Epoch #');
+        ylim([-0.5 6]);
+        set(gca,'YTick',[0 1 2 3 5])
+        set(gca,'YTickLabel',{'W','N1','N2','N3','R'})    
+        a(2) = subplot(2,1,2);
+        stairs(Yhat(sub_idx),'r','LineWidth',1);
+        title(['REM (Accuracy:  ',num2str(acc,'%1.2f'),' Sensitivity:  ',num2str(sensi,'%1.2f'),' Specificity:  ',num2str(speci,'%1.2f'),')']);
+        ylabel('Sleep Stage');
+        xlabel('Epoch #');
+        ylim([-0.5 6]);
+        set(gca,'YTick',[0 1 2 3 5])
+        set(gca,'YTickLabel',{'W','N1','N2','N3','R'})
+        linkaxes(a,'x');
+        if (print_figures), saveas(fig_1,strcat(print_folder,'\','RF_Hyp_Comparison_',Subject{i}),'epsc'), end
+
+        fig_1b = figure;
+        h1a = stairs(Sleep(sub_idx,7),'DisplayName','Hypnogram','LineWidth',1);
+        title(['Annotated Test Sequence: ',Subject{i}], 'Interpreter', 'none');
+        ylabel('Sleep Stage');
+        xlabel('Epoch #');
+        ylim([-0.5 6]);
+        set(gca,'YTick',[0 1 2 3 5])
+        set(gca,'YTickLabel',{'W','N1','N2','N3','R'})   
+        hold on;
+        h2a = stairs(Yhat(sub_idx),'r','DisplayName','RF Result','LineWidth',1);
+        if (print_figures), saveas(fig_1b,strcat(print_folder,'\','RF_Hyp_AlignComp_',Subject{i}),'epsc'), end
 %%
     T_results = process_classification_results_table(Yhat(sub_idx),Sleep(sub_idx,7));
 
@@ -111,6 +111,7 @@ for i=1:length(num_subjects)
     'RowName',T_results.Properties.RowNames,'Units', 'Normalized', 'Position',[0, 0, 1, 1]);
 
     if (print_figures), saveas(fig_t,strcat(print_folder,'\','All_Sleep_Stage_Performance_Table_',Subject{i}),'png'), end
+    end
 
 
 end

@@ -54,7 +54,7 @@ for p=1:length(EMG_feats)
     plot(table2array(EMG_Metric(rbd,q)),table2array(EMG_Auto_Metric(rbd,q)),'ro');
     plot(0:max_val/10:max_val,0:max_val/10:max_val,'k--');
     % plot(ones(1,11)*0.9,0:0.1:1,'k--');
-    title([feat_name,' Comparison (Correlation Coeff: ',num2str(R(1,2),3),')'], 'Interpreter', 'none');
+    title([feat_name,' Comparison (Correlation Coeff: ',num2str(R(1,2),'%1.2f'),')'], 'Interpreter', 'none');
     xlabel([feat_name,' (Annotated Sleep Staging)'], 'Interpreter', 'none');
     ylabel([feat_name,' (Automatic Sleep Staging)'], 'Interpreter', 'none');
     xlim([0 max_val]);
@@ -69,8 +69,8 @@ end
 
     feat_name = 'Motor Activity';
     
-    dur_idx = find(strcmp(EMG_Table_Names(EMG_feats),'MAD_Dur'));
-    per_idx = find(strcmp(EMG_Table_Names(EMG_feats),'MAD_Per'));
+    dur_idx = find(strcmp(EMG_Table_Names,'MAD_Dur'));
+    per_idx = find(strcmp(EMG_Table_Names,'MAD_Per'));
 
     fig_num(q+1) = figure;
     R = corrcoef(max(table2array(EMG_Metric(:,dur_idx)),table2array(EMG_Metric(:,per_idx))),max(table2array(EMG_Auto_Metric(:,dur_idx)),table2array(EMG_Auto_Metric(:,per_idx))),'rows','pairwise');
@@ -82,7 +82,7 @@ end
     
     plot(0:max_val/10:max_val,0:max_val/10:max_val,'k--');
     % plot(ones(1,11)*0.9,0:0.1:1,'k--');
-    title([feat_name,' Comparison (Correlation Coeff: ',num2str(R(1,2),3),')'], 'Interpreter', 'none');
+    title([feat_name,' Comparison (Correlation Coeff: ',num2str(R(1,2),'%1.2f'),')'], 'Interpreter', 'none');
     xlabel([feat_name,' (Annotated Sleep Staging)'], 'Interpreter', 'none');
     ylabel([feat_name,' (Automatic Sleep Staging)'], 'Interpreter', 'none');
     xlim([0 max_val]);

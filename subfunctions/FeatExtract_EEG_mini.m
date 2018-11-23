@@ -337,13 +337,13 @@ for i = 1:N
 
 %% Time Domain Properties
 
-%     [tdp_f1, tdp_f2] = tdp(x,10);    
-%     for j=1:length(tdp_f1)
-%         structname = strcat('tdpf1_',num2str(j));
-%         features_struct.EEG_(structname)(i,1) = tdp_f1(j);
-%         structname = strcat('tdpf2_',num2str(j));
-%         features_struct.EEG_(structname)(i,1) = tdp_f2(j);
-%     end   
+    [tdp_f1, tdp_f2] = tdp(x,10);    
+    for j=1:length(tdp_f1)
+        structname = strcat('EEG_tdpf1_',num2str(j));
+        features_struct.(structname)(i,1) = tdp_f1(j);
+        structname = strcat('EEG_tdpf2_',num2str(j));
+        features_struct.(structname)(i,1) = tdp_f2(j);
+    end   
 % %     rmpath('C:\Users\scro2778\Documents\MATLAB\SignalProcessing\Biosig2.88\NaN\inst')
 
 %% Square Energy Operator
