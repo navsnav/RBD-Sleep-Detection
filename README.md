@@ -2,7 +2,7 @@
 
 
 ## Sleep Staging and RBD Detection
-#### Code used in paper: Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis
+#### Code used in paper: Detection of REM Sleep Behaviour Disorder by Automated Polysomnography Analysis ([arXiv link](https://arxiv.org/abs/1811.04662))
 
 When using this code, please cite [1]: 
 
