@@ -203,7 +203,18 @@ for f=1:length(fls)
                 Sleep_Struct.(subject).EEGEOG = features_struct_30s;
                 EEGEOGSnamesSubjects = fieldnames(features_struct_30s)';
                 Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(EEGEOGSnamesSubjects)) = EEGEOGSnamesSubjects;
-                
+          
+            case {'ECG'}
+                feature_time = 30;
+                ECG_CHAN = find(strcmp(cellstr(patinfo.chlabels), char(signals_for_processing(j))));
+                data_signal = squeeze(data(:,:,ECG_CHAN))';
+                data_signal = reshape(data_signal,numel(data_signal),1);
+                disp("Extracting ECG features")
+                [ecg_feats, features_struct_30s,ecg_data_signal] = FeatExtract_HR_mat(data_signal, fs,epoch_time);
+                Sleep_Struct.(subject).ECG = features_struct_30s;
+                ECGSnamesSubjects = fieldnames(features_struct_30s)';
+                Sleep_names(length(Sleep_names)+1:length(Sleep_names)+length(ECGSnamesSubjects)) = ECGSnamesSubjects;
+                        
             otherwise
                 warning(['Signal ' char(signals_for_processing(j)) ' not found!']);
         end
@@ -226,7 +237,7 @@ for f=1:length(fls)
     
     % Combining features into one patient table
     Ttmp = [eeg_feats,eog_feats];
-    Ttmp2 = [emg_feats,eeg_eog_feats];
+    Ttmp2 = [emg_feats,eeg_eog_feats,ecg_feats];
     Sleep = [Sleep,Ttmp,Ttmp2,time_from_start,time_from_end];
     
     Sleep_T = array2table(Sleep, 'VariableNames',Sleep_names);

@@ -77,15 +77,58 @@ cd(current_dir);
 
 [patients,ia,ic] = unique(Sleep_table.SubjectIndex);
 
-% rmv_idx = ismember(Sleep_table.SubjectIndex,patients(1:5));
-rmv_idx = ismember(Sleep_table.SubjectIndex,patients([37,38,39,90,92,94,101,105,107,109,111]));
-
+rmv_idx = ismember(Sleep_table.SubjectIndex,patients(1:5));
 Sleep(rmv_idx,:) = [];
 Sleep_table(rmv_idx,:) = [];
 subject_names = fieldnames(Sleep_Struct);
 Sleep_Struct_Old = Sleep_Struct;
-% Sleep_Struct = rmfield(Sleep_Struct,subject_names(1:5));
- Sleep_Struct = rmfield(Sleep_Struct,subject_names([37,38,39,90,92,94,101,105,107,109,111]));
+Sleep_Struct = rmfield(Sleep_Struct,subject_names(1:5));
+
 
 %% Parameters for generating results
-close all
+outfilename = 'RBD_Detection_Results_500trees_ECG_24_12_2018'; %Filename/Folder to be created
+view_results = 1; %Produce Graphs/figures
+print_figures= 1; %Save Graphs/figures
+print_folder = [data_folder, 'Graphs_', outfilename, slashchar];
+display_flag = 1; %Diplay results on command window
+save_data = 1; %Save Data
+
+%% Preprocess Data
+% SS_Features = [11:144]; % Features used for sleep staging
+% SS_Features = [11:29,31:139,192,193]; % Features used for sleep staging
+SS_Features = [11:164,217,218]; % Features used for sleep staging
+EMG_feats = [3,7,8,9,10,11,15,32,33]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3)
+% EMG_feats = [3,7,8,9,10,11,15,17,32,33]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3)
+
+EMG_est_feats = [3,7,8,9]; %AI, MAD_Dur, MAD_Per, Stream
+% ECG_feats = [3,7,8,9,10,11,15,17,32,33,34:121]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + LFHF_Index, RR_Index, StdRR(REM), RMSSD_Index
+% ECG_feats = [3,7,8,9,10,11,15,17,32,33,36,38,42,46,62,64,122]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + Best ECG
+ECG_feats = [3,7,8,9,10,11,15,32,33,36,38,42,46,62,64,122]; %AI ratios + N3% + SleepEff + Fractal Exponenet Ratios (REM:N2/N3) + Best ECG
+
+% Preprocess Sleep Staging Features
+disp('Precprocessing Features...');
+[Sleep_table_Pre] = RBD_RF_Preprocess(Sleep_table,[0,5],SS_Features);
+disp('Precprocessing Complete.');
+
+% Random Forest paramters
+n_trees = 500;  %Paper used 500 trees (done to save time/space)
+
+%% Cross Fold Indexing
+Sleep = table2array(Sleep_table_Pre);
+[patients,ia,ic] = unique(Sleep_table_Pre.SubjectIndex);
+rbd_group = Sleep(ia,6)==5;
+
+folds = ceil(log2(length(rbd_group))/5)*5; %find appropriate number of folds
+indices = crossvalind('Kfold',rbd_group, folds);
+
+%% RBD Detection
+% Apply cross fold validation for automated sleep staging followed by RBD
+% detection using established metrics and new metrics
+disp(['Initiating ',num2str(folds),' fold cross validation with ',num2str(n_trees),' trees.']);
+% [Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag);
+[Auto_SS_Results,RBD_New_Results,EMG_Est_Results,EMG_Auto_New_Results,EMG_Auto_Est_Results,All_Confusion] = RBD_Detection2(Sleep_table_Pre,Sleep_Struct,rbd_group,indices,folds,SS_Features,EMG_est_feats,EMG_feats,ECG_feats,n_trees,view_results,print_figures,print_folder,save_data,outfilename,display_flag);
+
+
+
+
+

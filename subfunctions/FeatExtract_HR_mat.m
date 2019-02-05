@@ -1,4 +1,4 @@
-function   [feats, features_struct, hr_data] = FeatExtract_HR_mat(hr_signal, fs,epoch_time, hyp,data_collection_start) %external function
+function   [feats, features_struct, hr_data] = FeatExtract_HR_mat(hr_signal, fs,epoch_time) %external function
 
 signal = reshape(hr_signal',fs*epoch_time,numel(hr_signal)/(fs*epoch_time));
 

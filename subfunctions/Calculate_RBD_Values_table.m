@@ -237,6 +237,9 @@ function RBD_Table = Calculate_RBD_Values_table(Sleep_table)%,hyp,condition,feat
        T.Clvl10_REM(i) = mean(Sleep_table.Clvl10(sub_actual_rem_idx));
        T.Clvl10_N3(i) = mean(Sleep_table.Clvl10(sub_actual_n3_idx));         
        T.Clvl10_N2(i) = mean(Sleep_table.Clvl10(sub_actual_n2_idx));         
+
+       T.RMSSD_Index_REMN2(i) =(T.RMSSD_REM(i)-T.RMSSD_N2(i))/T.RMSSD_REM(i);
+       
     end
     
 %     T = table(Subjects,RBD',AI_REM',AI_N3',AI_N2',AI_W',CAP_HC_Actual_MAD_Dur',CAP_HC_Actual_MAD_Per'...
